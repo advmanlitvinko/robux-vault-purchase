@@ -85,13 +85,24 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
           </div>
           
           {isCustomMode && (
-            <div className="text-center space-y-2 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg">
-              <p className="text-lg font-semibold">
-                Вы выбрали: <span className="text-primary">{formatAmount(customAmount[0])} Robux</span>
-              </p>
-              <p className="text-2xl font-bold text-foreground">
-                Цена: {formatPrice(currentPrice)}
-              </p>
+            <div className="text-center space-y-4 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg">
+              <div className="space-y-2">
+                <p className="text-lg font-semibold">
+                  Вы выбрали: <span className="text-primary">{formatAmount(customAmount[0])} Robux</span>
+                </p>
+                <p className="text-2xl font-bold text-foreground">
+                  Цена: {formatPrice(currentPrice)}
+                </p>
+              </div>
+              <Button 
+                variant="robux" 
+                size="lg"
+                onClick={() => onBuy(customAmount[0], currentPrice)}
+                className="w-full"
+              >
+                <Coins className="w-5 h-5 mr-2" />
+                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
+              </Button>
             </div>
           )}
         </CardContent>
@@ -117,12 +128,11 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
               return (
                 <Card 
                   key={pkg.amount}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg relative ${
+                  className={`group cursor-pointer transition-all duration-200 hover:shadow-lg relative ${
                     isSelected 
                       ? 'ring-2 ring-primary shadow-lg bg-primary/5' 
                       : 'hover:ring-1 hover:ring-primary/50'
                   }`}
-                  onClick={() => handlePackageSelect(pkg.amount)}
                 >
                   {pkg.popular && (
                     <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
@@ -130,14 +140,30 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                     </Badge>
                   )}
                   
-                  <CardContent className="p-4 text-center">
-                    <Icon className={`w-8 h-8 mx-auto mb-2 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <CardContent className="p-4 text-center space-y-3">
+                    <Icon className={`w-8 h-8 mx-auto ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
                     <div className="space-y-1">
                       <p className="font-bold text-lg">{formatAmount(pkg.amount)} Robux</p>
                       <p className="text-xl font-semibold text-primary">{formatPrice(pkg.price)}</p>
                       <p className="text-xs text-muted-foreground">
                         ~{(pkg.price / pkg.amount).toFixed(3)} ₽ за Robux
                       </p>
+                    </div>
+                    
+                    {/* Кнопка покупки, появляется при hover */}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <Button 
+                        variant="robux" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onBuy(pkg.amount, pkg.price);
+                        }}
+                        className="w-full text-sm"
+                      >
+                        <Coins className="w-4 h-4 mr-1" />
+                        Купить
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -147,20 +173,6 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
         </CardContent>
       </Card>
 
-      {/* Кнопка покупки */}
-      {currentAmount > 0 && (
-        <div className="text-center">
-          <Button 
-            variant="robux" 
-            size="lg"
-            onClick={() => onBuy(currentAmount, currentPrice)}
-            className="text-xl px-12 py-6 animate-bounce-slow"
-          >
-            <Coins className="w-6 h-6 mr-2" />
-            Купить {formatAmount(currentAmount)} Robux за {formatPrice(currentPrice)}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
