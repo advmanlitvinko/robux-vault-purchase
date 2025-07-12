@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { Header } from '@/components/navigation/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { RobuxCalculator } from '@/components/robux/RobuxCalculator';
 import { PaymentModal } from '@/components/payment/PaymentModal';
@@ -43,11 +44,14 @@ const Index = () => {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
+        {/* Шапка с навигацией */}
+        <Header />
+        
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
 
         {/* Калькулятор Robux */}
-        <section ref={calculatorRef} className="py-20 px-4" id="calculator">
+        <section ref={calculatorRef} className="py-20 px-4" id="buy">
           <div className="max-w-4xl mx-auto">
             <div className="text-center space-y-4 mb-12">
               <h2 className="text-3xl md:text-4xl font-bold">
@@ -62,13 +66,19 @@ const Index = () => {
         </section>
 
         {/* Инструкция */}
-        <InstructionsSection />
+        <div id="instructions">
+          <InstructionsSection />
+        </div>
 
         {/* Отзывы */}
-        <ReviewsSection />
+        <div id="reviews">
+          <ReviewsSection />
+        </div>
 
         {/* Поддержка */}
-        <SupportSection />
+        <div id="support">
+          <SupportSection />
+        </div>
 
         {/* Модальное окно оплаты */}
         <PaymentModal
