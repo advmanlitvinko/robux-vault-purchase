@@ -4,6 +4,7 @@ import { Header } from '@/components/navigation/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { RobuxCalculator } from '@/components/robux/RobuxCalculator';
 import { PaymentModal } from '@/components/payment/PaymentModal';
+import { PetsSection } from '@/components/pets/PetsSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
@@ -13,10 +14,14 @@ const Index = () => {
     isOpen: boolean;
     amount: number;
     price: number;
+    isPet?: boolean;
+    petName?: string;
   }>({
     isOpen: false,
     amount: 0,
-    price: 0
+    price: 0,
+    isPet: false,
+    petName: ''
   });
 
   const calculatorRef = useRef<HTMLDivElement>(null);
@@ -29,7 +34,19 @@ const Index = () => {
     setPaymentModal({
       isOpen: true,
       amount,
-      price
+      price,
+      isPet: false,
+      petName: ''
+    });
+  };
+
+  const handleBuyPet = (petName: string, price: number) => {
+    setPaymentModal({
+      isOpen: true,
+      amount: 0,
+      price,
+      isPet: true,
+      petName
     });
   };
 
@@ -37,7 +54,9 @@ const Index = () => {
     setPaymentModal({
       isOpen: false,
       amount: 0,
-      price: 0
+      price: 0,
+      isPet: false,
+      petName: ''
     });
   };
 
@@ -65,6 +84,9 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Питомцы */}
+        <PetsSection onBuyPet={handleBuyPet} />
+
         {/* Инструкция */}
         <div id="instructions">
           <InstructionsSection />
@@ -86,6 +108,8 @@ const Index = () => {
           onClose={handleClosePayment}
           amount={paymentModal.amount}
           price={paymentModal.price}
+          isPet={paymentModal.isPet}
+          petName={paymentModal.petName}
         />
       </div>
     </AuthGuard>

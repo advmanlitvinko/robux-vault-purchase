@@ -5,12 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2 } from "lucide-react";
+import { ReceiptModal } from './ReceiptModal';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   amount: number;
   price: number;
+  isPet?: boolean;
+  petName?: string;
 }
 
 const PAYMENT_METHODS = [
@@ -20,10 +23,11 @@ const PAYMENT_METHODS = [
   { id: 'qiwi', name: 'QIWI', icon: Building, popular: false },
 ];
 
-export function PaymentModal({ isOpen, onClose, amount, price }: PaymentModalProps) {
+export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName }: PaymentModalProps) {
   const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success'>('nickname');
   const [nickname, setNickname] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -58,6 +62,7 @@ export function PaymentModal({ isOpen, onClose, amount, price }: PaymentModalPro
     setStep('nickname');
     setNickname('');
     setSelectedMethod(null);
+    setShowReceipt(false);
     onClose();
   };
 
@@ -65,12 +70,20 @@ export function PaymentModal({ isOpen, onClose, amount, price }: PaymentModalPro
     handleClose();
   };
 
+  const handleShowReceipt = () => {
+    setShowReceipt(true);
+  };
+
+  const handleCloseReceipt = () => {
+    setShowReceipt(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            💳 Оплата {formatAmount(amount)} Robux
+            💳 Оплата {isPet ? petName : `${formatAmount(amount)} Robux`}
           </DialogTitle>
           <DialogDescription>
             Сумма к оплате: {formatPrice(price)}
@@ -146,7 +159,7 @@ export function PaymentModal({ isOpen, onClose, amount, price }: PaymentModalPro
                 ✅ Оплата прошла успешно!
               </p>
               <p className="text-sm">
-                {formatAmount(amount)} Robux были зачислены на аккаунт "{nickname}"
+                {isPet ? `${petName} был(а) отправлен(а) на аккаунт "${nickname}"` : `${formatAmount(amount)} Robux были зачислены на аккаунт "${nickname}"`}
               </p>
               <p className="text-xs text-muted-foreground">
                 ⏱ Проверка может занять до 30 минут
@@ -156,13 +169,24 @@ export function PaymentModal({ isOpen, onClose, amount, price }: PaymentModalPro
               <Button onClick={handleBackToShop} className="w-full">
                 Вернуться в магазин
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleShowReceipt}>
                 Показать чек
               </Button>
             </div>
           </div>
         )}
       </DialogContent>
+      
+      {/* Модальное окно чека */}
+      <ReceiptModal
+        isOpen={showReceipt}
+        onClose={handleCloseReceipt}
+        amount={amount}
+        price={price}
+        nickname={nickname}
+        isPet={isPet}
+        petName={petName}
+      />
     </Dialog>
   );
 }

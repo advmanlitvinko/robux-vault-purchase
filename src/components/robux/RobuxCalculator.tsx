@@ -64,7 +64,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
             Настроить количество
           </CardTitle>
           <CardDescription>
-            Выберите точное количество Robux от 100 до 5000
+            Выберите точное количество Robux от 100 до 20000
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -72,7 +72,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
             <Slider
               value={customAmount}
               onValueChange={handleSliderChange}
-              max={5000}
+              max={20000}
               min={100}
               step={10}
               className="w-full"
@@ -80,7 +80,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
             />
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>100</span>
-              <span>5000</span>
+              <span>20000</span>
             </div>
           </div>
           
