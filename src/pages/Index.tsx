@@ -8,6 +8,10 @@ import { PetsSection } from '@/components/pets/PetsSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
+import { CartProvider } from '@/hooks/useCart';
+import { CartModal } from '@/components/cart/CartModal';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart } from 'lucide-react';
 
 const Index = () => {
   const [paymentModal, setPaymentModal] = useState<{
@@ -24,6 +28,7 @@ const Index = () => {
     petName: ''
   });
 
+  const [cartModal, setCartModal] = useState(false);
   const calculatorRef = useRef<HTMLDivElement>(null);
 
   const handleGetStarted = () => {
@@ -60,11 +65,33 @@ const Index = () => {
     });
   };
 
+  const handleCartCheckout = (total: number) => {
+    setPaymentModal({
+      isOpen: true,
+      amount: 0,
+      price: total,
+      isPet: false,
+      petName: ''
+    });
+  };
+
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background">
-        {/* Шапка с навигацией */}
-        <Header />
+      <CartProvider>
+        <div className="min-h-screen bg-background">
+          {/* Шапка с навигацией */}
+          <Header />
+          
+          {/* Кнопка корзины */}
+          <div className="fixed bottom-6 right-6 z-50">
+            <Button
+              onClick={() => setCartModal(true)}
+              className="rounded-full w-14 h-14 shadow-lg"
+              size="lg"
+            >
+              <ShoppingCart className="w-6 h-6" />
+            </Button>
+          </div>
         
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
@@ -102,16 +129,24 @@ const Index = () => {
           <SupportSection />
         </div>
 
-        {/* Модальное окно оплаты */}
-        <PaymentModal
-          isOpen={paymentModal.isOpen}
-          onClose={handleClosePayment}
-          amount={paymentModal.amount}
-          price={paymentModal.price}
-          isPet={paymentModal.isPet}
-          petName={paymentModal.petName}
-        />
-      </div>
+          {/* Модальное окно оплаты */}
+          <PaymentModal
+            isOpen={paymentModal.isOpen}
+            onClose={handleClosePayment}
+            amount={paymentModal.amount}
+            price={paymentModal.price}
+            isPet={paymentModal.isPet}
+            petName={paymentModal.petName}
+          />
+
+          {/* Модальное окно корзины */}
+          <CartModal
+            isOpen={cartModal}
+            onClose={() => setCartModal(false)}
+            onCheckout={handleCartCheckout}
+          />
+        </div>
+      </CartProvider>
     </AuthGuard>
   );
 };

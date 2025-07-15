@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Zap, Star, Crown, Sparkles, Bug } from "lucide-react";
+import { Heart, Zap, Star, Crown, Sparkles, Bug, Plus, Minus } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+import { PetInfoModal } from './PetInfoModal';
 
 // Импорт изображений питомцев
 import RaccoonImage from "@/assets/pets/raccoon.png";
@@ -24,7 +26,9 @@ const PETS_DATA = [
     image: RaccoonImage,
     icon: Heart,
     rarity: "Редкий",
-    description: "Хитрый енот-воришка"
+    description: "Хитрый енот-воришка",
+    abilities: ["Кража предметов", "Ночное зрение", "Быстрое передвижение"],
+    stats: { strength: 75, speed: 85, intelligence: 90 }
   },
   {
     name: "T-Rex",
@@ -33,7 +37,9 @@ const PETS_DATA = [
     image: TRexImage,
     icon: Star,
     rarity: "Легендарный",
-    description: "Могучий тираннозавр"
+    description: "Могучий тираннозавр",
+    abilities: ["Мощный укус", "Устрашающий рык", "Сильные лапы"],
+    stats: { strength: 100, speed: 60, intelligence: 70 }
   },
   {
     name: "Disco Bee",
@@ -42,7 +48,9 @@ const PETS_DATA = [
     image: DiscoBeeImage,
     icon: Sparkles,
     rarity: "Легендарный",
-    description: "Танцующая дискотечная пчела"
+    description: "Танцующая дискотечная пчела",
+    abilities: ["Танцевальные движения", "Пыльцевой взрыв", "Ослепляющий свет"],
+    stats: { strength: 70, speed: 95, intelligence: 85 }
   },
   {
     name: "Queen Bee",
@@ -51,7 +59,9 @@ const PETS_DATA = [
     image: QueenBeeImage,
     icon: Crown,
     rarity: "Эпический",
-    description: "Величественная королева улья"
+    description: "Величественная королева улья",
+    abilities: ["Королевский контроль", "Производство мёда", "Защита улья"],
+    stats: { strength: 65, speed: 70, intelligence: 95 }
   },
   {
     name: "Mimic Octopus",
@@ -60,7 +70,9 @@ const PETS_DATA = [
     image: MimicOctopusImage,
     icon: Zap,
     rarity: "Эпический",
-    description: "Мимический осьминог-перевертыш"
+    description: "Мимический осьминог-перевертыш",
+    abilities: ["Мимикрия", "Чернильное облако", "Гибкость"],
+    stats: { strength: 60, speed: 80, intelligence: 100 }
   },
   {
     name: "Dragonfly",
@@ -69,7 +81,9 @@ const PETS_DATA = [
     image: DragonflyImage,
     icon: Bug,
     rarity: "Обычный",
-    description: "Быстрая стрекоза"
+    description: "Быстрая стрекоза",
+    abilities: ["Быстрый полёт", "Точная атака", "Манёвренность"],
+    stats: { strength: 45, speed: 100, intelligence: 60 }
   }
 ];
 
@@ -88,6 +102,8 @@ const getRarityColor = (rarity: string) => {
 
 export function PetsSection({ onBuyPet }: PetsSectionProps) {
   const [hoveredPet, setHoveredPet] = useState<string | null>(null);
+  const [selectedPet, setSelectedPet] = useState<typeof PETS_DATA[0] | null>(null);
+  const { dispatch } = useCart();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -96,6 +112,26 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(price);
+  };
+
+  const addToCart = (pet: typeof PETS_DATA[0]) => {
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: {
+        id: `pet-${pet.name}`,
+        name: pet.displayName,
+        price: pet.price,
+        type: 'pet'
+      }
+    });
+  };
+
+  const openPetInfo = (pet: typeof PETS_DATA[0]) => {
+    setSelectedPet(pet);
+  };
+
+  const closePetInfo = () => {
+    setSelectedPet(null);
   };
 
   const firstRow = PETS_DATA.slice(0, 3);
@@ -141,13 +177,21 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                   
                   <CardContent className="space-y-4">
                     {/* Изображение питомца */}
-                    <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
+                    <div 
+                      className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 cursor-pointer"
+                      onClick={() => openPetInfo(pet)}
+                    >
                       <img 
                         src={pet.image} 
                         alt={pet.displayName}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+                        <div className="bg-white/90 rounded-full p-2">
+                          <Sparkles className="w-5 h-5 text-primary" />
+                        </div>
+                      </div>
                     </div>
                     
                     {/* Информация о цене */}
@@ -161,10 +205,21 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                       </span>
                     </div>
                     
-                    {/* Кнопка покупки */}
-                    <div className={`transition-all duration-300 ${
+                    {/* Меню количества и кнопки */}
+                    <div className={`transition-all duration-300 space-y-2 ${
                       isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                     }`}>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addToCart(pet)}
+                          className="px-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm font-medium">Добавить в корзину</span>
+                      </div>
                       <Button 
                         variant="premium" 
                         size="lg"
@@ -172,7 +227,7 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                         className="w-full"
                       >
                         <Crown className="w-4 h-4 mr-2" />
-                        Купить {pet.displayName}
+                        Купить сейчас
                       </Button>
                     </div>
                   </CardContent>
@@ -208,13 +263,21 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                   
                   <CardContent className="space-y-4">
                     {/* Изображение питомца */}
-                    <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
+                    <div 
+                      className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 cursor-pointer"
+                      onClick={() => openPetInfo(pet)}
+                    >
                       <img 
                         src={pet.image} 
                         alt={pet.displayName}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+                        <div className="bg-white/90 rounded-full p-2">
+                          <Sparkles className="w-5 h-5 text-primary" />
+                        </div>
+                      </div>
                     </div>
                     
                     {/* Информация о цене */}
@@ -228,10 +291,21 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                       </span>
                     </div>
                     
-                    {/* Кнопка покупки */}
-                    <div className={`transition-all duration-300 ${
+                    {/* Меню количества и кнопки */}
+                    <div className={`transition-all duration-300 space-y-2 ${
                       isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                     }`}>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addToCart(pet)}
+                          className="px-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm font-medium">Добавить в корзину</span>
+                      </div>
                       <Button 
                         variant="premium" 
                         size="lg"
@@ -239,7 +313,7 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                         className="w-full"
                       >
                         <Crown className="w-4 h-4 mr-2" />
-                        Купить {pet.displayName}
+                        Купить сейчас
                       </Button>
                     </div>
                   </CardContent>
@@ -249,6 +323,13 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
           </div>
         </div>
       </div>
+
+      {/* Модальное окно с информацией о питомце */}
+      <PetInfoModal
+        isOpen={!!selectedPet}
+        onClose={closePetInfo}
+        pet={selectedPet}
+      />
     </section>
   );
 }

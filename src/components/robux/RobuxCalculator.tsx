@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Coins, Zap, Star, Crown } from "lucide-react";
+import { Coins, Zap, Star, Crown, Plus, Minus } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 
 interface RobuxCalculatorProps {
   onBuy: (amount: number, price: number) => void;
@@ -12,18 +13,20 @@ interface RobuxCalculatorProps {
 const ROBUX_RATE = 0.769; // 1 Robux = 0.769 ₽
 
 const POPULAR_PACKAGES = [
-  { amount: 400, price: 307.6, icon: Coins, popular: false },
-  { amount: 1200, price: 923, icon: Zap, popular: true },
-  { amount: 3000, price: 2307, icon: Star, popular: false },
-  { amount: 6000, price: 4614, icon: Crown, popular: true },
-  { amount: 9000, price: 6921, icon: Crown, popular: false },
-  { amount: 20000, price: 15380, icon: Crown, popular: true },
+  { amount: 400, price: 300, icon: Coins, popular: false },
+  { amount: 1200, price: 900, icon: Zap, popular: true },
+  { amount: 3000, price: 2300, icon: Star, popular: false },
+  { amount: 6000, price: 4600, icon: Crown, popular: true },
+  { amount: 9000, price: 6900, icon: Crown, popular: false },
+  { amount: 20000, price: 15300, icon: Crown, popular: true },
 ];
 
 export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
   const [customAmount, setCustomAmount] = useState([1000]);
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
+  const [hoveredPackage, setHoveredPackage] = useState<number | null>(null);
+  const { dispatch } = useCart();
 
   const currentAmount = isCustomMode ? customAmount[0] : selectedPackage || 0;
   const currentPrice = isCustomMode 
@@ -52,6 +55,20 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('ru-RU').format(amount);
+  };
+
+  const addToCart = (amount: number, price: number) => {
+    const id = `robux-${amount}`;
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: {
+        id,
+        name: `${formatAmount(amount)} Robux`,
+        price,
+        type: 'robux',
+        amount
+      }
+    });
   };
 
   return (
@@ -133,6 +150,8 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                       ? 'ring-2 ring-primary shadow-lg bg-primary/5' 
                       : 'hover:ring-1 hover:ring-primary/50'
                   }`}
+                  onMouseEnter={() => setHoveredPackage(pkg.amount)}
+                  onMouseLeave={() => setHoveredPackage(null)}
                 >
                   {pkg.popular && (
                     <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
@@ -150,8 +169,24 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                       </p>
                     </div>
                     
-                    {/* Кнопка покупки, появляется при hover */}
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    {/* Меню количества, появляется при hover */}
+                    <div className={`transition-all duration-200 ${
+                      hoveredPackage === pkg.amount ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+                    }`}>
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(pkg.amount, pkg.price);
+                          }}
+                          className="px-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm font-medium">Добавить в корзину</span>
+                      </div>
                       <Button 
                         variant="robux" 
                         size="sm"
@@ -162,7 +197,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                         className="w-full text-sm"
                       >
                         <Coins className="w-4 h-4 mr-1" />
-                        Купить
+                        Купить сейчас
                       </Button>
                     </div>
                   </CardContent>
