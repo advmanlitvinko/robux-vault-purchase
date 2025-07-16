@@ -222,13 +222,11 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
               return (
                 <Card 
                   key={pkg.amount}
-                  className={`group cursor-pointer transition-all duration-200 hover:shadow-lg relative ${
+                  className={`group cursor-pointer transition-all duration-200 hover:shadow-lg ${
                     isSelected 
                       ? 'ring-2 ring-primary shadow-lg bg-primary/5' 
                       : 'hover:ring-1 hover:ring-primary/50'
                   }`}
-                  onMouseEnter={() => setHoveredPackage(pkg.amount)}
-                  onMouseLeave={() => setHoveredPackage(null)}
                 >
                   {pkg.popular && (
                     <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
@@ -246,10 +244,8 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                       </p>
                     </div>
                     
-                    {/* Меню количества, появляется при hover */}
-                    <div className={`transition-all duration-200 space-y-2 ${
-                      hoveredPackage === pkg.amount ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                    }`}>
+                    {/* Меню количества - всегда видимо */}
+                    <div className="space-y-2">
                       <div className="space-y-2">
                         <p className="text-xs text-muted-foreground">Количество</p>
                         <QuantityControl
