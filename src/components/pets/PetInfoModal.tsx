@@ -8,28 +8,26 @@ interface PetInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
   pet: {
+    id: string;
     name: string;
     displayName: string;
     price: number;
     image: string;
     rarity: string;
     description: string;
-    abilities: string[];
-    stats: {
-      strength: number;
-      speed: number;
-      intelligence: number;
-    };
+    ability: string;
+    obtainMethod: string;
+    obtainChance: string;
   } | null;
 }
 
 const getRarityColor = (rarity: string) => {
   switch (rarity) {
-    case "Легендарный":
+    case "Divine":
       return "bg-gradient-to-r from-yellow-400 to-orange-500";
-    case "Эпический":
+    case "Мифический":
       return "bg-gradient-to-r from-purple-500 to-pink-500";
-    case "Редкий":
+    case "Эпический":
       return "bg-gradient-to-r from-blue-500 to-cyan-500";
     default:
       return "bg-gradient-to-r from-gray-500 to-gray-600";
@@ -92,60 +90,33 @@ export function PetInfoModal({ isOpen, onClose, pet }: PetInfoModalProps) {
             </div>
           </div>
 
-          {/* Способности */}
+          {/* Способность */}
           <Card>
             <CardContent className="p-4">
               <h4 className="font-semibold mb-3 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
-                Способности
+                Способность
               </h4>
-              <div className="space-y-2">
-                {pet.abilities.map((ability, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full" />
-                    <span className="text-sm">{ability}</span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">{pet.ability}</p>
             </CardContent>
           </Card>
 
-          {/* Характеристики */}
+          {/* Метод получения */}
           <Card>
             <CardContent className="p-4">
               <h4 className="font-semibold mb-3 flex items-center gap-2">
                 <Star className="w-5 h-5 text-primary" />
-                Характеристики
+                Метод получения
               </h4>
-              <div className="space-y-3">
-                {Object.entries(pet.stats).map(([stat, value]) => {
-                  const Icon = getStatIcon(stat);
-                  const statNames = {
-                    strength: 'Сила',
-                    speed: 'Скорость',
-                    intelligence: 'Интеллект'
-                  };
-                  
-                  return (
-                    <div key={stat} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">
-                          {statNames[stat as keyof typeof statNames]}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all duration-300"
-                            style={{ width: `${(value / 100) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium w-8 text-right">{value}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Источник:</span>
+                  <span className="text-sm font-medium">{pet.obtainMethod}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Шанс:</span>
+                  <span className="text-sm font-medium">{pet.obtainChance}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
