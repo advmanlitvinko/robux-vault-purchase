@@ -36,7 +36,7 @@ export function CartModal({ isOpen, onClose, onCheckout }: CartModalProps) {
   };
 
   const handleCheckout = () => {
-    onCheckout(state.total);
+    onCheckout(state.total, state.items);
     onClose();
   };
 
