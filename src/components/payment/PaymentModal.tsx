@@ -90,10 +90,10 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
           <DialogDescription>
             {cartItems ? (
               <div className="space-y-1">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="text-sm">
-                    {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} - {formatPrice(item.price * item.quantity)}
-                  </div>
+                 {cartItems.map((item) => (
+                   <div key={item.id} className="text-sm">
+                     {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
+                   </div>
                 ))}
                 <div className="font-medium">Итого: {formatPrice(price)}</div>
               </div>
@@ -178,7 +178,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
                       <div key={item.id}>
                         {item.type === 'pet' 
                           ? `${item.name} был(а) отправлен(а) на аккаунт "${nickname}"` 
-                          : `${formatAmount(item.amount || 0)} Robux были зачислены на аккаунт "${nickname}"`
+                          : `${formatAmount(item.amount || 0)} Robux (${item.quantity}x) были зачислены на аккаунт "${nickname}"`
                         }
                       </div>
                     ))}

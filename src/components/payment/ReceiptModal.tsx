@@ -91,6 +91,9 @@ export function ReceiptModal({
                       <span>Цена:</span>
                       <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
                     </div>
+                    {cartItems.length > 1 && item !== cartItems[cartItems.length - 1] && (
+                      <div className="border-b border-dashed my-2"></div>
+                    )}
                   </div>
                 ))
               ) : (
