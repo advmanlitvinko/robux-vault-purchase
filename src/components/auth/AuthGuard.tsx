@@ -22,7 +22,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     // Проверяем cookie при загрузке
     const authCookie = document.cookie
       .split('; ')
-      .find(row => row.startsWith('robux_auth='));
+      .find(row => row.startsWith('robux_auth_v2='));
     
     if (authCookie) {
       setIsAuthenticated(true);
@@ -39,7 +39,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       setIsAuthenticated(true);
       // Сохраняем в cookie на 24 часа
       const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      document.cookie = `robux_auth=true; expires=${expiryDate.toUTCString()}; path=/`;
+      document.cookie = `robux_auth_v2=true; expires=${expiryDate.toUTCString()}; path=/`;
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
