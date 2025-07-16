@@ -65,62 +65,65 @@ export function CartModal({ isOpen, onClose, onCheckout }: CartModalProps) {
             {/* Список товаров */}
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {state.items.map((item) => (
-                <Card key={item.id} className="p-4">
-                  <CardContent className="p-0">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {item.type === 'robux' ? (
-                          <Coins className="w-8 h-8 text-primary" />
-                        ) : (
-                          <Crown className="w-8 h-8 text-primary" />
-                        )}
-                        <div>
-                          <h4 className="font-medium">{item.name}</h4>
-                          {item.type === 'robux' && item.amount && (
-                            <p className="text-sm text-muted-foreground">
-                              {formatAmount(item.amount)} Robux
-                            </p>
-                          )}
-                          <p className="text-sm text-primary font-medium">
-                            {formatPrice(item.price)}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        {/* Управление количеством */}
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus className="w-4 h-4" />
-                          </Button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          >
-                            <Plus className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        
-                        {/* Удалить товар */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(item.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                <div key={item.id} className="flex items-center gap-3 p-3 border rounded-lg bg-card/50">
+                  {/* Изображение или иконка */}
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      {item.type === 'robux' ? (
+                        <Coins className="w-6 h-6 text-primary" />
+                      ) : (
+                        <Crown className="w-6 h-6 text-primary" />
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
+                  )}
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium truncate">{item.name}</h4>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{formatPrice(item.price)}</span>
+                      {item.type === 'robux' && item.amount && (
+                        <span>• {formatAmount(item.amount)} Robux</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center text-sm font-medium">
+                      {item.quantity}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeItem(item.id)}
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
 

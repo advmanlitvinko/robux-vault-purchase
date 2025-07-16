@@ -179,14 +179,11 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {firstRow.map((pet) => {
               const Icon = pet.icon;
-              const isHovered = hoveredPet === pet.name;
               
               return (
                 <Card 
                   key={pet.name}
                   className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm border-2 hover:border-primary/50"
-                  onMouseEnter={() => setHoveredPet(pet.name)}
-                  onMouseLeave={() => setHoveredPet(null)}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
@@ -259,14 +256,11 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {secondRow.map((pet) => {
               const Icon = pet.icon;
-              const isHovered = hoveredPet === pet.name;
               
               return (
                 <Card 
                   key={pet.name}
                   className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm border-2 hover:border-primary/50"
-                  onMouseEnter={() => setHoveredPet(pet.name)}
-                  onMouseLeave={() => setHoveredPet(null)}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
@@ -310,24 +304,18 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                       </span>
                     </div>
                     
-                    {/* Меню количества и кнопки */}
-                    <div className={`transition-all duration-300 space-y-2 ${
-                      isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                    }`}>
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => addToCart(pet)}
-                          className="px-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                        <span className="text-sm font-medium">Добавить в корзину</span>
-                      </div>
+                    {/* Управление количеством */}
+                    <div className="space-y-2">
+                      <QuantityControl
+                        quantity={getCartQuantity(pet.id)}
+                        onIncrease={() => updateQuantity(pet, getCartQuantity(pet.id) + 1)}
+                        onDecrease={() => updateQuantity(pet, getCartQuantity(pet.id) - 1)}
+                        onAdd={() => addToCart(pet)}
+                        isInCart={getCartQuantity(pet.id) > 0}
+                      />
                       <Button 
-                        variant="premium" 
-                        size="lg"
+                        variant="outline" 
+                        size="sm"
                         onClick={() => onBuyPet(pet.displayName, pet.price)}
                         className="w-full"
                       >
