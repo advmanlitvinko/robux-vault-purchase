@@ -12,7 +12,7 @@ const navItems = [
   { name: "Поддержка", href: "#support" },
 ];
 
-export function Header({ onCartCheckout }: { onCartCheckout: (total: number) => void }) {
+export function Header({ onCartCheckout, onOpenCart }: { onCartCheckout: (total: number) => void; onOpenCart: () => void }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cartModal, setCartModal] = useState(false);
   const { state } = useCart();
@@ -61,7 +61,7 @@ export function Header({ onCartCheckout }: { onCartCheckout: (total: number) => 
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCartModal(true)}
+            onClick={() => onOpenCart()}
             className="relative"
           >
             <ShoppingCart className="h-5 w-5" />
@@ -82,7 +82,7 @@ export function Header({ onCartCheckout }: { onCartCheckout: (total: number) => 
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCartModal(true)}
+            onClick={() => onOpenCart()}
             className="relative"
           >
             <ShoppingCart className="h-5 w-5" />

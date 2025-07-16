@@ -9,6 +9,7 @@ import { QuantityControl } from "@/components/ui/quantity-control";
 
 interface RobuxCalculatorProps {
   onBuy: (amount: number, price: number) => void;
+  onOpenCart: () => void;
 }
 
 const ROBUX_RATE = 0.769; // 1 Robux = 0.769 ₽
@@ -22,7 +23,7 @@ const POPULAR_PACKAGES = [
   { amount: 20000, price: 15300, icon: Crown, popular: true },
 ];
 
-export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
+export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
   const [customAmount, setCustomAmount] = useState([1000]);
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
@@ -180,11 +181,21 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
               <Button 
                 variant="robux" 
                 size="lg"
-                onClick={() => onBuy(customAmount[0], currentPrice * customQuantity)}
+                onClick={() => {
+                  const currentCartQuantity = getCartQuantity(customAmount[0]);
+                  if (currentCartQuantity > 0) {
+                    onOpenCart();
+                  } else {
+                    onBuy(customAmount[0], currentPrice * customQuantity);
+                  }
+                }}
                 className="w-full"
               >
                 <Coins className="w-5 h-5 mr-2" />
-                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice * customQuantity)}
+                {getCartQuantity(customAmount[0]) > 0 
+                  ? "Перейти в корзину" 
+                  : `Купить ${formatAmount(customAmount[0])} Robux за ${formatPrice(currentPrice * customQuantity)}`
+                }
               </Button>
             </div>
           )}
@@ -279,13 +290,18 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          const quantity = packageQuantities[pkg.amount] || 1;
-                          onBuy(pkg.amount, pkg.price * quantity);
+                          const currentCartQuantity = getCartQuantity(pkg.amount);
+                          if (currentCartQuantity > 0) {
+                            onOpenCart();
+                          } else {
+                            const quantity = packageQuantities[pkg.amount] || 1;
+                            onBuy(pkg.amount, pkg.price * quantity);
+                          }
                         }}
                         className="w-full text-sm"
                       >
                         <Coins className="w-4 h-4 mr-1" />
-                        Купить сейчас
+                        {getCartQuantity(pkg.amount) > 0 ? "Перейти в корзину" : "Купить сейчас"}
                       </Button>
                     </div>
                   </CardContent>

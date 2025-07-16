@@ -9,6 +9,7 @@ import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
 import { CartProvider } from '@/hooks/useCart';
+import { CartModal } from '@/components/cart/CartModal';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -26,6 +27,7 @@ const Index = () => {
     petName: ''
   });
 
+  const [cartModal, setCartModal] = useState(false);
   const calculatorRef = useRef<HTMLDivElement>(null);
 
   const handleGetStarted = () => {
@@ -72,12 +74,16 @@ const Index = () => {
     });
   };
 
+  const handleOpenCart = () => {
+    setCartModal(true);
+  };
+
   return (
     <AuthGuard>
       <CartProvider>
         <div className="min-h-screen bg-background">
           {/* Шапка с навигацией */}
-          <Header onCartCheckout={handleCartCheckout} />
+          <Header onCartCheckout={handleCartCheckout} onOpenCart={handleOpenCart} />
         
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
@@ -93,7 +99,7 @@ const Index = () => {
                 Настройте нужное количество или выберите готовый пакет
               </p>
             </div>
-            <RobuxCalculator onBuy={handleBuy} />
+            <RobuxCalculator onBuy={handleBuy} onOpenCart={handleOpenCart} />
           </div>
         </section>
 
@@ -125,6 +131,12 @@ const Index = () => {
             petName={paymentModal.petName}
           />
 
+          {/* Модальное окно корзины */}
+          <CartModal
+            isOpen={cartModal}
+            onClose={() => setCartModal(false)}
+            onCheckout={handleCartCheckout}
+          />
         </div>
       </CartProvider>
     </AuthGuard>
