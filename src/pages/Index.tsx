@@ -104,7 +104,7 @@ const Index = () => {
         </section>
 
         {/* Питомцы */}
-        <PetsSection onBuyPet={handleBuyPet} />
+        <PetsSection onBuyPet={handleBuyPet} onOpenCart={handleOpenCart} />
 
         {/* Инструкция */}
         <div id="instructions">

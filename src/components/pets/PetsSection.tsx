@@ -17,6 +17,7 @@ import DragonflyImage from "@/assets/pets/dragonfly.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;
+  onOpenCart: () => void;
 }
 
 const PETS_DATA = [
@@ -113,7 +114,7 @@ const getRarityColor = (rarity: string) => {
   }
 };
 
-export function PetsSection({ onBuyPet }: PetsSectionProps) {
+export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
   const [selectedPet, setSelectedPet] = useState<typeof PETS_DATA[0] | null>(null);
   const { state, dispatch } = useCart();
 
@@ -140,10 +141,17 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
   };
 
   const updateQuantity = (pet: typeof PETS_DATA[0], quantity: number) => {
-    dispatch({
-      type: 'UPDATE_QUANTITY',
-      payload: { id: pet.id, quantity }
-    });
+    if (quantity <= 0) {
+      dispatch({
+        type: 'REMOVE_ITEM',
+        payload: pet.id
+      });
+    } else {
+      dispatch({
+        type: 'UPDATE_QUANTITY',
+        payload: { id: pet.id, quantity }
+      });
+    }
   };
 
   const getCartQuantity = (petId: string) => {
@@ -230,20 +238,40 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                     {/* Управление количеством */}
                     <div className="space-y-2">
                       <QuantityControl
-                        quantity={getCartQuantity(pet.id)}
-                        onIncrease={() => updateQuantity(pet, getCartQuantity(pet.id) + 1)}
-                        onDecrease={() => updateQuantity(pet, getCartQuantity(pet.id) - 1)}
+                        quantity={getCartQuantity(pet.id) || 1}
+                        onIncrease={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity > 0) {
+                            updateQuantity(pet, currentQuantity + 1);
+                          } else {
+                            addToCart(pet);
+                          }
+                        }}
+                        onDecrease={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity > 0) {
+                            updateQuantity(pet, currentQuantity - 1);
+                          }
+                        }}
                         onAdd={() => addToCart(pet)}
                         isInCart={getCartQuantity(pet.id) > 0}
+                        maxQuantity={100}
                       />
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => onBuyPet(pet.displayName, pet.price)}
+                        onClick={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity >= 2) {
+                            onOpenCart();
+                          } else {
+                            onBuyPet(pet.displayName, pet.price);
+                          }
+                        }}
                         className="w-full"
                       >
                         <Crown className="w-4 h-4 mr-2" />
-                        Купить сейчас
+                        {getCartQuantity(pet.id) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
                       </Button>
                     </div>
                   </CardContent>
@@ -307,20 +335,40 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
                     {/* Управление количеством */}
                     <div className="space-y-2">
                       <QuantityControl
-                        quantity={getCartQuantity(pet.id)}
-                        onIncrease={() => updateQuantity(pet, getCartQuantity(pet.id) + 1)}
-                        onDecrease={() => updateQuantity(pet, getCartQuantity(pet.id) - 1)}
+                        quantity={getCartQuantity(pet.id) || 1}
+                        onIncrease={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity > 0) {
+                            updateQuantity(pet, currentQuantity + 1);
+                          } else {
+                            addToCart(pet);
+                          }
+                        }}
+                        onDecrease={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity > 0) {
+                            updateQuantity(pet, currentQuantity - 1);
+                          }
+                        }}
                         onAdd={() => addToCart(pet)}
                         isInCart={getCartQuantity(pet.id) > 0}
+                        maxQuantity={100}
                       />
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => onBuyPet(pet.displayName, pet.price)}
+                        onClick={() => {
+                          const currentQuantity = getCartQuantity(pet.id);
+                          if (currentQuantity >= 2) {
+                            onOpenCart();
+                          } else {
+                            onBuyPet(pet.displayName, pet.price);
+                          }
+                        }}
                         className="w-full"
                       >
                         <Crown className="w-4 h-4 mr-2" />
-                        Купить сейчас
+                        {getCartQuantity(pet.id) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
                       </Button>
                     </div>
                   </CardContent>
