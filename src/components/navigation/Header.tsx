@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { useCart } from "@/hooks/useCart";
-import { CartModal } from "@/components/cart/CartModal";
 
 const navItems = [
   { name: "Купить", href: "#buy" },
@@ -12,12 +9,8 @@ const navItems = [
   { name: "Поддержка", href: "#support" },
 ];
 
-export function Header({ onCartCheckout, onOpenCart }: { onCartCheckout: (total: number, items: any[]) => void; onOpenCart: () => void }) {
+export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartModal, setCartModal] = useState(false);
-  const { state } = useCart();
-
-  const totalItems = state.items.reduce((total, item) => total + item.quantity, 0);
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -56,46 +49,10 @@ export function Header({ onCartCheckout, onOpenCart }: { onCartCheckout: (total:
               </button>
             ))}
           </nav>
-          
-          {/* Корзина */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenCart()}
-            className="relative"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs min-w-[18px] h-5 flex items-center justify-center"
-              >
-                {totalItems}
-              </Badge>
-            )}
-          </Button>
         </div>
 
-        {/* Мобильное меню и корзина */}
+        {/* Мобильное меню */}
         <div className="flex items-center space-x-2 md:hidden">
-          {/* Корзина мобильная */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenCart()}
-            className="relative"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-2 -right-2 px-1.5 py-0.5 text-xs min-w-[18px] h-5 flex items-center justify-center"
-              >
-                {totalItems}
-              </Badge>
-            )}
-          </Button>
-          
           {/* Меню кнопка */}
           <Button
             variant="ghost"
@@ -123,16 +80,6 @@ export function Header({ onCartCheckout, onOpenCart }: { onCartCheckout: (total:
           </nav>
         </div>
       )}
-      
-      {/* Модальное окно корзины */}
-      <CartModal
-        isOpen={cartModal}
-        onClose={() => setCartModal(false)}
-        onCheckout={(total, items) => {
-          setCartModal(false);
-          onCartCheckout(total, items);
-        }}
-      />
     </header>
   );
 }

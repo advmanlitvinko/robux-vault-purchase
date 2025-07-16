@@ -6,7 +6,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2 } from "lucide-react";
 import { ReceiptModal } from './ReceiptModal';
-import { CartItem } from '@/hooks/useCart';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  type: 'robux' | 'pet';
+  amount?: number;
+  image?: string;
+}
 
 interface PaymentModalProps {
   isOpen: boolean;

@@ -8,9 +8,6 @@ import { PetsSection } from '@/components/pets/PetsSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
-import { CartProvider } from '@/hooks/useCart';
-import { CartModal } from '@/components/cart/CartModal';
-import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [paymentModal, setPaymentModal] = useState<{
@@ -19,17 +16,14 @@ const Index = () => {
     price: number;
     isPet?: boolean;
     petName?: string;
-    cartItems?: any[];
   }>({
     isOpen: false,
     amount: 0,
     price: 0,
     isPet: false,
     petName: '',
-    cartItems: []
   });
 
-  const [cartModal, setCartModal] = useState(false);
   const calculatorRef = useRef<HTMLDivElement>(null);
 
   const handleGetStarted = () => {
@@ -42,8 +36,7 @@ const Index = () => {
       amount,
       price,
       isPet: false,
-      petName: '',
-      cartItems: []
+      petName: ''
     });
   };
 
@@ -53,8 +46,7 @@ const Index = () => {
       amount: 0,
       price,
       isPet: true,
-      petName,
-      cartItems: []
+      petName
     });
   };
 
@@ -64,32 +56,15 @@ const Index = () => {
       amount: 0,
       price: 0,
       isPet: false,
-      petName: '',
-      cartItems: []
+      petName: ''
     });
-  };
-
-  const handleCartCheckout = (total: number, items: any[]) => {
-    setPaymentModal({
-      isOpen: true,
-      amount: 0,
-      price: total,
-      isPet: false,
-      petName: '',
-      cartItems: items
-    });
-  };
-
-  const handleOpenCart = () => {
-    setCartModal(true);
   };
 
   return (
     <AuthGuard>
-      <CartProvider>
-        <div className="min-h-screen bg-background">
-          {/* Шапка с навигацией */}
-          <Header onCartCheckout={handleCartCheckout} onOpenCart={handleOpenCart} />
+      <div className="min-h-screen bg-background">
+        {/* Шапка с навигацией */}
+        <Header />
         
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
@@ -105,12 +80,12 @@ const Index = () => {
                 Настройте нужное количество или выберите готовый пакет
               </p>
             </div>
-            <RobuxCalculator onBuy={handleBuy} onOpenCart={handleOpenCart} />
+            <RobuxCalculator onBuy={handleBuy} />
           </div>
         </section>
 
         {/* Питомцы */}
-        <PetsSection onBuyPet={handleBuyPet} onOpenCart={handleOpenCart} />
+        <PetsSection onBuyPet={handleBuyPet} />
 
         {/* Инструкция */}
         <div id="instructions">
@@ -127,24 +102,16 @@ const Index = () => {
           <SupportSection />
         </div>
 
-          {/* Модальное окно оплаты */}
-          <PaymentModal
-            isOpen={paymentModal.isOpen}
-            onClose={handleClosePayment}
-            amount={paymentModal.amount}
-            price={paymentModal.price}
-            isPet={paymentModal.isPet}
-            petName={paymentModal.petName}
-          />
-
-          {/* Модальное окно корзины */}
-          <CartModal
-            isOpen={cartModal}
-            onClose={() => setCartModal(false)}
-            onCheckout={handleCartCheckout}
-          />
-        </div>
-      </CartProvider>
+        {/* Модальное окно оплаты */}
+        <PaymentModal
+          isOpen={paymentModal.isOpen}
+          onClose={handleClosePayment}
+          amount={paymentModal.amount}
+          price={paymentModal.price}
+          isPet={paymentModal.isPet}
+          petName={paymentModal.petName}
+        />
+      </div>
     </AuthGuard>
   );
 };

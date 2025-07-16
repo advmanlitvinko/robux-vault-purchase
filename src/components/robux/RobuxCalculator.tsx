@@ -3,13 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Coins, Zap, Star, Crown, Plus, Minus } from "lucide-react";
-import { useCart } from "@/hooks/useCart";
-import { QuantityControl } from "@/components/ui/quantity-control";
+import { Coins, Zap, Star, Crown } from "lucide-react";
 
 interface RobuxCalculatorProps {
   onBuy: (amount: number, price: number) => void;
-  onOpenCart: () => void;
 }
 
 const ROBUX_RATE = 0.769; // 1 Robux = 0.769 ₽
@@ -23,14 +20,11 @@ const POPULAR_PACKAGES = [
   { amount: 20000, price: 15300, icon: Crown, popular: true },
 ];
 
-export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
+export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
   const [customAmount, setCustomAmount] = useState([1000]);
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
   const [hoveredPackage, setHoveredPackage] = useState<number | null>(null);
-  const [customQuantity, setCustomQuantity] = useState(1);
-  const [packageQuantities, setPackageQuantities] = useState<Record<number, number>>({});
-  const { dispatch, state } = useCart();
 
   const currentAmount = isCustomMode ? customAmount[0] : selectedPackage || 0;
   const currentPrice = isCustomMode 
@@ -59,49 +53,6 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('ru-RU').format(amount);
-  };
-
-  const addToCart = (amount: number, price: number, quantity: number = 1) => {
-    const id = `robux-${amount}`;
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        id,
-        name: `${formatAmount(amount)} Robux`,
-        price,
-        type: 'robux',
-        amount
-      }
-    });
-    
-    // Если количество больше 1, обновляем количество
-    if (quantity > 1) {
-      dispatch({
-        type: 'UPDATE_QUANTITY',
-        payload: { id, quantity }
-      });
-    }
-  };
-
-  const getCartQuantity = (robuxAmount: number) => {
-    const cartItem = state.items.find(item => item.id === `robux-${robuxAmount}`);
-    return cartItem?.quantity || 0;
-  };
-
-  const updateCartQuantity = (robuxAmount: number, quantity: number) => {
-    const id = `robux-${robuxAmount}`;
-    dispatch({
-      type: 'UPDATE_QUANTITY',
-      payload: { id, quantity }
-    });
-  };
-
-  const removeFromCart = (robuxAmount: number) => {
-    const id = `robux-${robuxAmount}`;
-    dispatch({
-      type: 'REMOVE_ITEM',
-      payload: id
-    });
   };
 
   return (
@@ -141,61 +92,18 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                   Вы выбрали: <span className="text-primary font-bold">{formatAmount(customAmount[0])} Robux</span>
                 </p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Цена: {formatPrice(currentPrice * customQuantity)}
+                  Цена: {formatPrice(currentPrice)}
                 </p>
-              </div>
-              
-              {/* Контроль количества */}
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Количество</p>
-                <div className="max-w-xs mx-auto">
-                  <QuantityControl
-                    quantity={getCartQuantity(customAmount[0]) > 0 ? getCartQuantity(customAmount[0]) : customQuantity}
-                    onIncrease={() => {
-                      const currentCartQuantity = getCartQuantity(customAmount[0]);
-                      if (currentCartQuantity > 0) {
-                        updateCartQuantity(customAmount[0], currentCartQuantity + 1);
-                      } else {
-                        setCustomQuantity(prev => Math.min(prev + 1, 100));
-                      }
-                    }}
-                    onDecrease={() => {
-                      const currentCartQuantity = getCartQuantity(customAmount[0]);
-                      if (currentCartQuantity > 0) {
-                        if (currentCartQuantity > 1) {
-                          updateCartQuantity(customAmount[0], currentCartQuantity - 1);
-                        } else {
-                          removeFromCart(customAmount[0]);
-                        }
-                      } else {
-                        setCustomQuantity(prev => Math.max(prev - 1, 1));
-                      }
-                    }}
-                    onAdd={() => addToCart(customAmount[0], currentPrice, customQuantity)}
-                    maxQuantity={100}
-                    isInCart={getCartQuantity(customAmount[0]) > 0}
-                  />
-                </div>
               </div>
               
               <Button 
                 variant="default"
                 size="lg"
-                onClick={() => {
-                  const currentCartQuantity = getCartQuantity(customAmount[0]);
-                  if (currentCartQuantity >= 2) {
-                    onOpenCart();
-                  } else {
-                    onBuy(customAmount[0], currentPrice * customQuantity);
-                  }
-                }}
+                onClick={() => onBuy(customAmount[0], currentPrice)}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <Coins className="w-5 h-5 mr-2" />
-                {getCartQuantity(customAmount[0]) >= 2 
-                  ? "Перейти в корзину" 
-                  : `Купить ${formatAmount(customAmount[0])} Robux за ${formatPrice(currentPrice * customQuantity)}`
-                }
+                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
               </Button>
             </div>
           )}
@@ -246,62 +154,19 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                       </p>
                     </div>
                     
-                    {/* Меню количества - всегда видимо */}
-                    <div className="space-y-2">
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground">Количество</p>
-                        <QuantityControl
-                          quantity={getCartQuantity(pkg.amount) > 0 ? getCartQuantity(pkg.amount) : (packageQuantities[pkg.amount] || 1)}
-                          onIncrease={() => {
-                            const currentCartQuantity = getCartQuantity(pkg.amount);
-                            if (currentCartQuantity > 0) {
-                              updateCartQuantity(pkg.amount, currentCartQuantity + 1);
-                            } else {
-                              setPackageQuantities(prev => ({
-                                ...prev,
-                                [pkg.amount]: Math.min((prev[pkg.amount] || 1) + 1, 100)
-                              }));
-                            }
-                          }}
-                          onDecrease={() => {
-                            const currentCartQuantity = getCartQuantity(pkg.amount);
-                            if (currentCartQuantity > 0) {
-                              if (currentCartQuantity > 1) {
-                                updateCartQuantity(pkg.amount, currentCartQuantity - 1);
-                              } else {
-                                removeFromCart(pkg.amount);
-                              }
-                            } else {
-                              setPackageQuantities(prev => ({
-                                ...prev,
-                                [pkg.amount]: Math.max((prev[pkg.amount] || 1) - 1, 1)
-                              }));
-                            }
-                          }}
-                          onAdd={() => addToCart(pkg.amount, pkg.price, packageQuantities[pkg.amount] || 1)}
-                          maxQuantity={100}
-                          isInCart={getCartQuantity(pkg.amount) > 0}
-                        />
-                      </div>
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const currentCartQuantity = getCartQuantity(pkg.amount);
-                          if (currentCartQuantity >= 2) {
-                            onOpenCart();
-                          } else {
-                            const quantity = packageQuantities[pkg.amount] || 1;
-                            onBuy(pkg.amount, pkg.price * quantity);
-                          }
-                        }}
-                        className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                      >
-                        <Coins className="w-4 h-4 mr-1" />
-                        {getCartQuantity(pkg.amount) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
-                      </Button>
-                    </div>
+                    
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onBuy(pkg.amount, pkg.price);
+                      }}
+                      className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                      <Coins className="w-4 h-4 mr-1" />
+                      Купить сейчас
+                    </Button>
                   </CardContent>
                 </Card>
               );

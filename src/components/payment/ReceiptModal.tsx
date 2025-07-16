@@ -1,7 +1,16 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, CreditCard, Calendar, User } from "lucide-react";
-import { CartItem } from '@/hooks/useCart';
+import { User, CheckCircle } from "lucide-react";
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  type: 'robux' | 'pet';
+  amount?: number;
+  image?: string;
+}
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -20,19 +29,13 @@ export function ReceiptModal({
   amount, 
   price, 
   nickname, 
-  isPet = false,
-  petName,
-  cartItems
+  isPet = false, 
+  petName, 
+  cartItems 
 }: ReceiptModalProps) {
   const transactionId = Math.random().toString(36).substr(2, 9).toUpperCase();
-  const cardNumber = "**** **** **** 4256";
-  const currentDate = new Date().toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  const cardNumber = "**** **** **** 1234";
+  const currentDate = new Date().toLocaleString('ru-RU');
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -104,14 +107,10 @@ export function ReceiptModal({
                       {isPet ? petName : `${formatAmount(amount)} Robux`}
                     </span>
                   </div>
-                  
-                  {!isPet && (
-                    <div className="flex justify-between">
-                      <span>Количество:</span>
-                      <span className="font-medium">{formatAmount(amount)}</span>
-                    </div>
-                  )}
-                  
+                  <div className="flex justify-between">
+                    <span>Количество:</span>
+                    <span className="font-medium">1</span>
+                  </div>
                   <div className="flex justify-between">
                     <span>Цена:</span>
                     <span className="font-medium">{formatPrice(price)}</span>
@@ -119,53 +118,42 @@ export function ReceiptModal({
                 </>
               )}
             </div>
-
-            {/* Информация об оплате */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <CreditCard className="w-4 h-4 text-muted-foreground" />
-                <span>Карта Сбербанка:</span>
-                <span className="font-medium">{cardNumber}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>Дата транзакции:</span>
-                <span className="font-medium">{currentDate}</span>
-              </div>
+            
+            <div className="flex justify-between">
+              <span>Способ оплаты:</span>
+              <span className="font-medium">Банковская карта</span>
             </div>
-
-            {/* Итого */}
-            <div className="border-t border-dashed pt-3">
-              <div className="flex justify-between text-lg font-bold">
-                <span>ИТОГО:</span>
-                <span>{formatPrice(price)}</span>
-              </div>
+            
+            <div className="flex justify-between">
+              <span>Номер карты:</span>
+              <span className="font-medium">{cardNumber}</span>
             </div>
+            
+            <div className="flex justify-between">
+              <span>ID транзакции:</span>
+              <span className="font-medium">{transactionId}</span>
+            </div>
+          </div>
 
-            {/* Статус */}
-            <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-              <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                <CheckCircle className="w-4 h-4" />
-                <span className="font-medium">Оплата успешно завершена</span>
-              </div>
-              <p className="text-sm text-green-600 dark:text-green-500 mt-1">
-                ID транзакции: {transactionId}
-              </p>
+          {/* Итого */}
+          <div className="border-t pt-4">
+            <div className="flex justify-between text-lg font-bold">
+              <span>Итого:</span>
+              <span className="text-primary">{formatPrice(price)}</span>
             </div>
           </div>
 
           {/* Кнопки */}
-          <div className="flex gap-2 pt-4">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+          <div className="flex gap-2">
+            <Button onClick={onClose} variant="outline" className="flex-1">
               Закрыть
             </Button>
             <Button 
+              onClick={() => window.print()} 
               variant="default" 
-              onClick={() => window.print()}
               className="flex-1"
             >
-              Печать чека
+              Распечатать чек
             </Button>
           </div>
         </div>

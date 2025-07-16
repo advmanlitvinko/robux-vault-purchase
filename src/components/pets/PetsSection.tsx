@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Zap, Star, Crown, Sparkles, Bug, Plus, Minus, ShoppingCart } from "lucide-react";
-import { useCart } from "@/hooks/useCart";
+import { Button } from "@/components/ui/button";
+import { Zap, Star, Crown, Sparkles, Info } from "lucide-react";
 import { PetInfoModal } from './PetInfoModal';
-import { QuantityControl } from '@/components/ui/quantity-control';
 
 // Импорт изображений питомцев
 import RaccoonImage from "@/assets/pets/raccoon.png";
@@ -17,7 +15,6 @@ import DragonflyImage from "@/assets/pets/dragonfly.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;
-  onOpenCart: () => void;
 }
 
 const PETS_DATA = [
@@ -27,7 +24,7 @@ const PETS_DATA = [
     displayName: "Енот",
     price: 549,
     image: RaccoonImage,
-    icon: Heart,
+    icon: Zap,
     rarity: "Divine",
     description: "Хитрый енот-воришка",
     ability: "Примерно каждые 15 минут идет на участок другого игрока, крадет (дублирует) случайный урожай и отдает его игроку!",
@@ -92,7 +89,7 @@ const PETS_DATA = [
     displayName: "Стрекоза",
     price: 299,
     image: DragonflyImage,
-    icon: Bug,
+    icon: Sparkles,
     rarity: "Divine",
     description: "Быстрая стрекоза",
     ability: "Трансмутация: каждые ~5 минут одно случайное растение станет золотым.",
@@ -114,9 +111,8 @@ const getRarityColor = (rarity: string) => {
   }
 };
 
-export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
+export function PetsSection({ onBuyPet }: PetsSectionProps) {
   const [selectedPet, setSelectedPet] = useState<typeof PETS_DATA[0] | null>(null);
-  const { state, dispatch } = useCart();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -125,38 +121,6 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(price);
-  };
-
-  const addToCart = (pet: typeof PETS_DATA[0]) => {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        id: pet.id,
-        name: pet.displayName,
-        price: pet.price,
-        type: 'pet',
-        image: pet.image
-      }
-    });
-  };
-
-  const updateQuantity = (pet: typeof PETS_DATA[0], quantity: number) => {
-    if (quantity <= 0) {
-      dispatch({
-        type: 'REMOVE_ITEM',
-        payload: pet.id
-      });
-    } else {
-      dispatch({
-        type: 'UPDATE_QUANTITY',
-        payload: { id: pet.id, quantity }
-      });
-    }
-  };
-
-  const getCartQuantity = (petId: string) => {
-    const item = state.items.find(item => item.id === petId);
-    return item ? item.quantity : 0;
   };
 
   const openPetInfo = (pet: typeof PETS_DATA[0]) => {
@@ -200,9 +164,9 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                         {pet.rarity}
                       </Badge>
                     </div>
-                    <CardDescription className="text-sm">
+                    <p className="text-sm text-muted-foreground">
                       {pet.description}
-                    </CardDescription>
+                    </p>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">
@@ -219,7 +183,7 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
                         <div className="bg-white/90 rounded-full p-2">
-                          <Sparkles className="w-5 h-5 text-primary" />
+                          <Info className="w-5 h-5 text-primary" />
                         </div>
                       </div>
                     </div>
@@ -235,45 +199,13 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                       </span>
                     </div>
                     
-                    {/* Управление количеством */}
-                    <div className="space-y-2">
-                      <QuantityControl
-                        quantity={getCartQuantity(pet.id) || 1}
-                        onIncrease={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity > 0) {
-                            updateQuantity(pet, currentQuantity + 1);
-                          } else {
-                            addToCart(pet);
-                          }
-                        }}
-                        onDecrease={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity > 0) {
-                            updateQuantity(pet, currentQuantity - 1);
-                          }
-                        }}
-                        onAdd={() => addToCart(pet)}
-                        isInCart={getCartQuantity(pet.id) > 0}
-                        maxQuantity={100}
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity >= 2) {
-                            onOpenCart();
-                          } else {
-                            onBuyPet(pet.displayName, pet.price);
-                          }
-                        }}
-                        className="w-full"
-                      >
-                        <Crown className="w-4 h-4 mr-2" />
-                        {getCartQuantity(pet.id) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
-                      </Button>
-                    </div>
+                    <Button 
+                      onClick={() => onBuyPet(pet.name, pet.price)}
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      Купить за {formatPrice(pet.price)}
+                    </Button>
                   </CardContent>
                 </Card>
               );
@@ -297,9 +229,9 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                         {pet.rarity}
                       </Badge>
                     </div>
-                    <CardDescription className="text-sm">
+                    <p className="text-sm text-muted-foreground">
                       {pet.description}
-                    </CardDescription>
+                    </p>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">
@@ -316,7 +248,7 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
                         <div className="bg-white/90 rounded-full p-2">
-                          <Sparkles className="w-5 h-5 text-primary" />
+                          <Info className="w-5 h-5 text-primary" />
                         </div>
                       </div>
                     </div>
@@ -332,45 +264,13 @@ export function PetsSection({ onBuyPet, onOpenCart }: PetsSectionProps) {
                       </span>
                     </div>
                     
-                    {/* Управление количеством */}
-                    <div className="space-y-2">
-                      <QuantityControl
-                        quantity={getCartQuantity(pet.id) || 1}
-                        onIncrease={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity > 0) {
-                            updateQuantity(pet, currentQuantity + 1);
-                          } else {
-                            addToCart(pet);
-                          }
-                        }}
-                        onDecrease={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity > 0) {
-                            updateQuantity(pet, currentQuantity - 1);
-                          }
-                        }}
-                        onAdd={() => addToCart(pet)}
-                        isInCart={getCartQuantity(pet.id) > 0}
-                        maxQuantity={100}
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          const currentQuantity = getCartQuantity(pet.id);
-                          if (currentQuantity >= 2) {
-                            onOpenCart();
-                          } else {
-                            onBuyPet(pet.displayName, pet.price);
-                          }
-                        }}
-                        className="w-full"
-                      >
-                        <Crown className="w-4 h-4 mr-2" />
-                        {getCartQuantity(pet.id) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
-                      </Button>
-                    </div>
+                    <Button 
+                      onClick={() => onBuyPet(pet.name, pet.price)}
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      Купить за {formatPrice(pet.price)}
+                    </Button>
                   </CardContent>
                 </Card>
               );
