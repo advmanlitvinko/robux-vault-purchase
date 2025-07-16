@@ -183,7 +183,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                 size="lg"
                 onClick={() => {
                   const currentCartQuantity = getCartQuantity(customAmount[0]);
-                  if (currentCartQuantity > 0) {
+                  if (currentCartQuantity >= 2) {
                     onOpenCart();
                   } else {
                     onBuy(customAmount[0], currentPrice * customQuantity);
@@ -192,7 +192,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                 className="w-full"
               >
                 <Coins className="w-5 h-5 mr-2" />
-                {getCartQuantity(customAmount[0]) > 0 
+                {getCartQuantity(customAmount[0]) >= 2 
                   ? "Перейти в корзину" 
                   : `Купить ${formatAmount(customAmount[0])} Robux за ${formatPrice(currentPrice * customQuantity)}`
                 }
@@ -291,7 +291,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                         onClick={(e) => {
                           e.stopPropagation();
                           const currentCartQuantity = getCartQuantity(pkg.amount);
-                          if (currentCartQuantity > 0) {
+                          if (currentCartQuantity >= 2) {
                             onOpenCart();
                           } else {
                             const quantity = packageQuantities[pkg.amount] || 1;
@@ -301,7 +301,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                         className="w-full text-sm"
                       >
                         <Coins className="w-4 h-4 mr-1" />
-                        {getCartQuantity(pkg.amount) > 0 ? "Перейти в корзину" : "Купить сейчас"}
+                        {getCartQuantity(pkg.amount) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
                       </Button>
                     </div>
                   </CardContent>
