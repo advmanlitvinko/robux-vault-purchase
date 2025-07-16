@@ -64,13 +64,14 @@ const Index = () => {
     });
   };
 
-  const handleCartCheckout = (total: number) => {
+  const handleCartCheckout = (total: number, items: any[]) => {
     setPaymentModal({
       isOpen: true,
       amount: 0,
       price: total,
       isPet: false,
-      petName: ''
+      petName: '',
+      cartItems: items
     });
   };
 

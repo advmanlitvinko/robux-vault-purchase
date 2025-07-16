@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2 } from "lucide-react";
 import { ReceiptModal } from './ReceiptModal';
+import { CartItem } from '@/hooks/useCart';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface PaymentModalProps {
   price: number;
   isPet?: boolean;
   petName?: string;
+  cartItems?: CartItem[];
 }
 
 const PAYMENT_METHODS = [
@@ -23,7 +25,7 @@ const PAYMENT_METHODS = [
   { id: 'qiwi', name: 'QIWI', icon: Building, popular: false },
 ];
 
-export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName }: PaymentModalProps) {
+export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {
   const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success'>('nickname');
   const [nickname, setNickname] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
@@ -83,10 +85,21 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            💳 Оплата {isPet ? petName : `${formatAmount(amount)} Robux`}
+            💳 Оплата {cartItems ? 'заказа' : (isPet ? petName : `${formatAmount(amount)} Robux`)}
           </DialogTitle>
           <DialogDescription>
-            Сумма к оплате: {formatPrice(price)}
+            {cartItems ? (
+              <div className="space-y-1">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="text-sm">
+                    {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} - {formatPrice(item.price * item.quantity)}
+                  </div>
+                ))}
+                <div className="font-medium">Итого: {formatPrice(price)}</div>
+              </div>
+            ) : (
+              `Сумма к оплате: ${formatPrice(price)}`
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +172,20 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
                 ✅ Оплата прошла успешно!
               </p>
               <p className="text-sm">
-                {isPet ? `${petName} был(а) отправлен(а) на аккаунт "${nickname}"` : `${formatAmount(amount)} Robux были зачислены на аккаунт "${nickname}"`}
+                {cartItems ? (
+                  <div className="space-y-1">
+                    {cartItems.map((item) => (
+                      <div key={item.id}>
+                        {item.type === 'pet' 
+                          ? `${item.name} был(а) отправлен(а) на аккаунт "${nickname}"` 
+                          : `${formatAmount(item.amount || 0)} Robux были зачислены на аккаунт "${nickname}"`
+                        }
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  isPet ? `${petName} был(а) отправлен(а) на аккаунт "${nickname}"` : `${formatAmount(amount)} Robux были зачислены на аккаунт "${nickname}"`
+                )}
               </p>
               <p className="text-xs text-muted-foreground">
                 ⏱ Проверка может занять до 30 минут
@@ -186,6 +212,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
         nickname={nickname}
         isPet={isPet}
         petName={petName}
+        cartItems={cartItems}
       />
     </Dialog>
   );

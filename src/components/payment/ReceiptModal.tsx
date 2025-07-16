@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, CreditCard, Calendar, User } from "lucide-react";
+import { CartItem } from '@/hooks/useCart';
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ReceiptModalProps {
   nickname: string;
   isPet?: boolean;
   petName?: string;
+  cartItems?: CartItem[];
 }
 
 export function ReceiptModal({ 
@@ -19,7 +21,8 @@ export function ReceiptModal({
   price, 
   nickname, 
   isPet = false,
-  petName 
+  petName,
+  cartItems
 }: ReceiptModalProps) {
   const transactionId = Math.random().toString(36).substr(2, 9).toUpperCase();
   const cardNumber = "**** **** **** 4256";
@@ -71,24 +74,47 @@ export function ReceiptModal({
             </div>
             
             <div className="border-t border-b border-dashed py-3 space-y-2">
-              <div className="flex justify-between">
-                <span>Товар:</span>
-                <span className="font-medium">
-                  {isPet ? petName : `${formatAmount(amount)} Robux`}
-                </span>
-              </div>
-              
-              {!isPet && (
-                <div className="flex justify-between">
-                  <span>Количество:</span>
-                  <span className="font-medium">{formatAmount(amount)}</span>
-                </div>
+              {cartItems ? (
+                cartItems.map((item) => (
+                  <div key={item.id} className="space-y-1">
+                    <div className="flex justify-between">
+                      <span>Товар:</span>
+                      <span className="font-medium">
+                        {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Количество:</span>
+                      <span className="font-medium">{item.quantity}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Цена:</span>
+                      <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span>Товар:</span>
+                    <span className="font-medium">
+                      {isPet ? petName : `${formatAmount(amount)} Robux`}
+                    </span>
+                  </div>
+                  
+                  {!isPet && (
+                    <div className="flex justify-between">
+                      <span>Количество:</span>
+                      <span className="font-medium">{formatAmount(amount)}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between">
+                    <span>Цена:</span>
+                    <span className="font-medium">{formatPrice(price)}</span>
+                  </div>
+                </>
               )}
-              
-              <div className="flex justify-between">
-                <span>Цена:</span>
-                <span className="font-medium">{formatPrice(price)}</span>
-              </div>
             </div>
 
             {/* Информация об оплате */}
