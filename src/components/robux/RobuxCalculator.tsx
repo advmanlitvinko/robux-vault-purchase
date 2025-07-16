@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Coins, Zap, Star, Crown, Plus, Minus } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { QuantityControl } from "@/components/ui/quantity-control";
 
 interface RobuxCalculatorProps {
   onBuy: (amount: number, price: number) => void;
@@ -26,7 +27,9 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
   const [hoveredPackage, setHoveredPackage] = useState<number | null>(null);
-  const { dispatch } = useCart();
+  const [customQuantity, setCustomQuantity] = useState(1);
+  const [packageQuantities, setPackageQuantities] = useState<Record<number, number>>({});
+  const { dispatch, state } = useCart();
 
   const currentAmount = isCustomMode ? customAmount[0] : selectedPackage || 0;
   const currentPrice = isCustomMode 
@@ -57,7 +60,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
     return new Intl.NumberFormat('ru-RU').format(amount);
   };
 
-  const addToCart = (amount: number, price: number) => {
+  const addToCart = (amount: number, price: number, quantity: number = 1) => {
     const id = `robux-${amount}`;
     dispatch({
       type: 'ADD_ITEM',
@@ -68,6 +71,35 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
         type: 'robux',
         amount
       }
+    });
+    
+    // Если количество больше 1, обновляем количество
+    if (quantity > 1) {
+      dispatch({
+        type: 'UPDATE_QUANTITY',
+        payload: { id, quantity }
+      });
+    }
+  };
+
+  const getCartQuantity = (robuxAmount: number) => {
+    const cartItem = state.items.find(item => item.id === `robux-${robuxAmount}`);
+    return cartItem?.quantity || 0;
+  };
+
+  const updateCartQuantity = (robuxAmount: number, quantity: number) => {
+    const id = `robux-${robuxAmount}`;
+    dispatch({
+      type: 'UPDATE_QUANTITY',
+      payload: { id, quantity }
+    });
+  };
+
+  const removeFromCart = (robuxAmount: number) => {
+    const id = `robux-${robuxAmount}`;
+    dispatch({
+      type: 'REMOVE_ITEM',
+      payload: id
     });
   };
 
@@ -108,17 +140,33 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                   Вы выбрали: <span className="text-primary">{formatAmount(customAmount[0])} Robux</span>
                 </p>
                 <p className="text-2xl font-bold text-foreground">
-                  Цена: {formatPrice(currentPrice)}
+                  Цена: {formatPrice(currentPrice * customQuantity)}
                 </p>
               </div>
+              
+              {/* Контроль количества */}
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Количество</p>
+                <div className="max-w-xs mx-auto">
+                  <QuantityControl
+                    quantity={customQuantity}
+                    onIncrease={() => setCustomQuantity(prev => Math.min(prev + 1, 100))}
+                    onDecrease={() => setCustomQuantity(prev => Math.max(prev - 1, 1))}
+                    onAdd={() => addToCart(customAmount[0], currentPrice, customQuantity)}
+                    maxQuantity={100}
+                    isInCart={getCartQuantity(customAmount[0]) > 0}
+                  />
+                </div>
+              </div>
+              
               <Button 
                 variant="robux" 
                 size="lg"
-                onClick={() => onBuy(customAmount[0], currentPrice)}
+                onClick={() => onBuy(customAmount[0], currentPrice * customQuantity)}
                 className="w-full"
               >
                 <Coins className="w-5 h-5 mr-2" />
-                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
+                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice * customQuantity)}
               </Button>
             </div>
           )}
@@ -170,29 +218,33 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                     </div>
                     
                     {/* Меню количества, появляется при hover */}
-                    <div className={`transition-all duration-200 ${
+                    <div className={`transition-all duration-200 space-y-2 ${
                       hoveredPackage === pkg.amount ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                     }`}>
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(pkg.amount, pkg.price);
-                          }}
-                          className="px-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                        <span className="text-sm font-medium">Добавить в корзину</span>
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">Количество</p>
+                        <QuantityControl
+                          quantity={packageQuantities[pkg.amount] || 1}
+                          onIncrease={() => setPackageQuantities(prev => ({
+                            ...prev,
+                            [pkg.amount]: Math.min((prev[pkg.amount] || 1) + 1, 100)
+                          }))}
+                          onDecrease={() => setPackageQuantities(prev => ({
+                            ...prev,
+                            [pkg.amount]: Math.max((prev[pkg.amount] || 1) - 1, 1)
+                          }))}
+                          onAdd={() => addToCart(pkg.amount, pkg.price, packageQuantities[pkg.amount] || 1)}
+                          maxQuantity={100}
+                          isInCart={getCartQuantity(pkg.amount) > 0}
+                        />
                       </div>
                       <Button 
                         variant="robux" 
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onBuy(pkg.amount, pkg.price);
+                          const quantity = packageQuantities[pkg.amount] || 1;
+                          onBuy(pkg.amount, pkg.price * quantity);
                         }}
                         className="w-full text-sm"
                       >
