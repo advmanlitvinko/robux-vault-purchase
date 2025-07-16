@@ -85,7 +85,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            💳 Оплата {cartItems ? 'заказа' : (isPet ? petName : `${formatAmount(amount)} Robux`)}
+            💳 Оплата {cartItems ? `${formatPrice(price)}` : (isPet ? petName : `${formatAmount(amount)} Robux`)}
           </DialogTitle>
           <DialogDescription>
             {cartItems ? (
@@ -94,8 +94,8 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
                    <div key={item.id} className="text-sm">
                      {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
                    </div>
-                ))}
-                <div className="font-medium">Итого: {formatPrice(price)}</div>
+                 ))}
+                 <div className="font-medium">Итого: {formatPrice(price)}</div>
               </div>
             ) : (
               `Сумма к оплате: ${formatPrice(price)}`
