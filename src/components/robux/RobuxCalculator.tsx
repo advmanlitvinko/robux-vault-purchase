@@ -107,7 +107,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
   return (
     <div className="space-y-8">
       {/* Настраиваемое количество */}
-      <Card className="shadow-lg">
+        <Card className="shadow-xl bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Slider className="w-5 h-5" />
@@ -135,12 +135,12 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
           </div>
           
           {isCustomMode && (
-            <div className="text-center space-y-4 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg">
+            <div className="text-center space-y-4 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 rounded-xl border border-primary/20 shadow-lg">
               <div className="space-y-2">
-                <p className="text-lg font-semibold">
-                  Вы выбрали: <span className="text-primary">{formatAmount(customAmount[0])} Robux</span>
+                <p className="text-lg font-semibold text-foreground">
+                  Вы выбрали: <span className="text-primary font-bold">{formatAmount(customAmount[0])} Robux</span>
                 </p>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Цена: {formatPrice(currentPrice * customQuantity)}
                 </p>
               </div>
@@ -179,7 +179,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
               </div>
               
               <Button 
-                variant="outline"
+                variant="default"
                 size="lg"
                 onClick={() => {
                   const currentCartQuantity = getCartQuantity(customAmount[0]);
@@ -189,7 +189,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                     onBuy(customAmount[0], currentPrice * customQuantity);
                   }
                 }}
-                className="w-full"
+                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <Coins className="w-5 h-5 mr-2" />
                 {getCartQuantity(customAmount[0]) >= 2 
@@ -203,7 +203,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
       </Card>
 
       {/* Популярные пакеты */}
-      <Card className="shadow-lg">
+      <Card className="shadow-xl bg-gradient-to-br from-card via-card to-secondary/5 border-2 border-secondary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="w-5 h-5" />
@@ -222,24 +222,26 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
               return (
                 <Card 
                   key={pkg.amount}
-                  className={`group cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                  className={`group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 bg-gradient-to-br from-card to-primary/5 border-2 hover:border-primary/60 ${
                     isSelected 
-                      ? 'ring-2 ring-primary shadow-lg bg-primary/5' 
+                      ? 'ring-2 ring-primary shadow-xl bg-primary/10 border-primary' 
                       : 'hover:ring-1 hover:ring-primary/50'
                   }`}
                 >
                   {pkg.popular && (
-                    <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
+                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-accent to-primary text-white font-semibold shadow-lg">
                       Популярный
                     </Badge>
                   )}
                   
-                  <CardContent className="p-4 text-center space-y-3">
-                    <Icon className={`w-8 h-8 mx-auto ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <CardContent className="p-4 text-center space-y-3 bg-gradient-to-b from-transparent to-primary/5 rounded-lg">
+                    <Icon className={`w-10 h-10 mx-auto transition-all duration-300 ${isSelected ? 'text-primary scale-110' : 'text-muted-foreground group-hover:text-primary group-hover:scale-110'}`} />
                     <div className="space-y-1">
-                      <p className="font-bold text-lg">{formatAmount(pkg.amount)} Robux</p>
-                      <p className="text-xl font-semibold text-primary">{formatPrice(pkg.price)}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-bold text-xl text-foreground">{formatAmount(pkg.amount)} Robux</p>
+                      <p className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                        {formatPrice(pkg.price)}
+                      </p>
+                      <p className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
                         ~{(pkg.price / pkg.amount).toFixed(3)} ₽ за Robux
                       </p>
                     </div>
@@ -282,7 +284,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                         />
                       </div>
                       <Button 
-                        variant="outline" 
+                        variant="default" 
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -294,7 +296,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                             onBuy(pkg.amount, pkg.price * quantity);
                           }
                         }}
-                        className="w-full text-sm"
+                        className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
                       >
                         <Coins className="w-4 h-4 mr-1" />
                         {getCartQuantity(pkg.amount) >= 2 ? "Перейти в корзину" : "Купить сейчас"}
