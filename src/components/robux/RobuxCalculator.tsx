@@ -149,9 +149,27 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                 <p className="text-sm text-muted-foreground">Количество</p>
                 <div className="max-w-xs mx-auto">
                   <QuantityControl
-                    quantity={customQuantity}
-                    onIncrease={() => setCustomQuantity(prev => Math.min(prev + 1, 100))}
-                    onDecrease={() => setCustomQuantity(prev => Math.max(prev - 1, 1))}
+                    quantity={getCartQuantity(customAmount[0]) > 0 ? getCartQuantity(customAmount[0]) : customQuantity}
+                    onIncrease={() => {
+                      const currentCartQuantity = getCartQuantity(customAmount[0]);
+                      if (currentCartQuantity > 0) {
+                        updateCartQuantity(customAmount[0], currentCartQuantity + 1);
+                      } else {
+                        setCustomQuantity(prev => Math.min(prev + 1, 100));
+                      }
+                    }}
+                    onDecrease={() => {
+                      const currentCartQuantity = getCartQuantity(customAmount[0]);
+                      if (currentCartQuantity > 0) {
+                        if (currentCartQuantity > 1) {
+                          updateCartQuantity(customAmount[0], currentCartQuantity - 1);
+                        } else {
+                          removeFromCart(customAmount[0]);
+                        }
+                      } else {
+                        setCustomQuantity(prev => Math.max(prev - 1, 1));
+                      }
+                    }}
                     onAdd={() => addToCart(customAmount[0], currentPrice, customQuantity)}
                     maxQuantity={100}
                     isInCart={getCartQuantity(customAmount[0]) > 0}
@@ -224,15 +242,33 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                       <div className="space-y-2">
                         <p className="text-xs text-muted-foreground">Количество</p>
                         <QuantityControl
-                          quantity={packageQuantities[pkg.amount] || 1}
-                          onIncrease={() => setPackageQuantities(prev => ({
-                            ...prev,
-                            [pkg.amount]: Math.min((prev[pkg.amount] || 1) + 1, 100)
-                          }))}
-                          onDecrease={() => setPackageQuantities(prev => ({
-                            ...prev,
-                            [pkg.amount]: Math.max((prev[pkg.amount] || 1) - 1, 1)
-                          }))}
+                          quantity={getCartQuantity(pkg.amount) > 0 ? getCartQuantity(pkg.amount) : (packageQuantities[pkg.amount] || 1)}
+                          onIncrease={() => {
+                            const currentCartQuantity = getCartQuantity(pkg.amount);
+                            if (currentCartQuantity > 0) {
+                              updateCartQuantity(pkg.amount, currentCartQuantity + 1);
+                            } else {
+                              setPackageQuantities(prev => ({
+                                ...prev,
+                                [pkg.amount]: Math.min((prev[pkg.amount] || 1) + 1, 100)
+                              }));
+                            }
+                          }}
+                          onDecrease={() => {
+                            const currentCartQuantity = getCartQuantity(pkg.amount);
+                            if (currentCartQuantity > 0) {
+                              if (currentCartQuantity > 1) {
+                                updateCartQuantity(pkg.amount, currentCartQuantity - 1);
+                              } else {
+                                removeFromCart(pkg.amount);
+                              }
+                            } else {
+                              setPackageQuantities(prev => ({
+                                ...prev,
+                                [pkg.amount]: Math.max((prev[pkg.amount] || 1) - 1, 1)
+                              }));
+                            }
+                          }}
                           onAdd={() => addToCart(pkg.amount, pkg.price, packageQuantities[pkg.amount] || 1)}
                           maxQuantity={100}
                           isInCart={getCartQuantity(pkg.amount) > 0}
