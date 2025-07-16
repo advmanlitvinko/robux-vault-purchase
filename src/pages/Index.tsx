@@ -8,49 +8,8 @@ import { PetsSection } from '@/components/pets/PetsSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
-import { CartProvider, useCart } from '@/hooks/useCart';
-import { CartModal } from '@/components/cart/CartModal';
+import { CartProvider } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ShoppingCart } from 'lucide-react';
-
-const CartButton = ({ onCheckout }: { onCheckout: (total: number) => void }) => {
-  const { state } = useCart();
-  const [cartModal, setCartModal] = useState(false);
-  
-  const totalItems = state.items.reduce((total, item) => total + item.quantity, 0);
-  
-  return (
-    <>
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setCartModal(true)}
-          className="relative rounded-full w-14 h-14 shadow-lg"
-          size="lg"
-        >
-          <ShoppingCart className="w-6 h-6" />
-          {totalItems > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-2 -right-2 px-2 py-1 text-xs min-w-[20px] h-6 flex items-center justify-center"
-            >
-              {totalItems}
-            </Badge>
-          )}
-        </Button>
-      </div>
-      
-      <CartModal
-        isOpen={cartModal}
-        onClose={() => setCartModal(false)}
-        onCheckout={(total) => {
-          setCartModal(false);
-          onCheckout(total);
-        }}
-      />
-    </>
-  );
-};
 
 const Index = () => {
   const [paymentModal, setPaymentModal] = useState<{
@@ -118,10 +77,7 @@ const Index = () => {
       <CartProvider>
         <div className="min-h-screen bg-background">
           {/* Шапка с навигацией */}
-          <Header />
-          
-          {/* Кнопка корзины */}
-          <CartButton onCheckout={handleCartCheckout} />
+          <Header onCartCheckout={handleCartCheckout} />
         
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
