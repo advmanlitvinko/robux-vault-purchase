@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2 } from "lucide-react";
+import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2, QrCode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { ReceiptModal } from './ReceiptModal';
 
 interface CartItem {
@@ -29,13 +30,13 @@ interface PaymentModalProps {
 
 const PAYMENT_METHODS = [
   { id: 'card', name: 'Банковская карта', icon: CreditCard, popular: true },
-  { id: 'sbp', name: 'СБП', icon: Smartphone, popular: true },
+  { id: 'sbp', name: 'СБП', icon: QrCode, popular: true },
   { id: 'yoomoney', name: 'ЮMoney', icon: Wallet, popular: false },
   { id: 'qiwi', name: 'QIWI', icon: Building, popular: false },
 ];
 
 export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {
-  const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success'>('nickname');
+  const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success' | 'qr'>('nickname');
   const [nickname, setNickname] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -61,12 +62,26 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
 
   const handlePaymentSelect = (methodId: string) => {
     setSelectedMethod(methodId);
+    
+    if (methodId === 'sbp') {
+      setStep('qr');
+    } else {
+      setStep('processing');
+      
+      // Имитация обработки платежа
+      setTimeout(() => {
+        setStep('success');
+      }, 3000);
+    }
+  };
+
+  const handleQRPayment = () => {
     setStep('processing');
     
-    // Имитация обработки платежа
+    // Имитация обработки платежа СБП
     setTimeout(() => {
       setStep('success');
-    }, 3000);
+    }, 2000);
   };
 
   const handleClose = () => {
@@ -175,6 +190,42 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
             <div>
               <p className="font-medium">Обработка платежа...</p>
               <p className="text-sm text-muted-foreground">Пожалуйста, подождите</p>
+            </div>
+          </div>
+        )}
+
+        {step === 'qr' && (
+          <div className="text-center space-y-6 py-4">
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">Оплата через СБП</h3>
+              <p className="text-sm text-muted-foreground">
+                Отсканируйте QR-код приложением банка, чтобы оплатить заказ
+              </p>
+            </div>
+            
+            <div className="flex justify-center">
+              <div 
+                className="p-4 bg-white rounded-lg border-2 border-dashed border-primary/20 cursor-pointer hover:border-primary/40 transition-colors"
+                onClick={handleQRPayment}
+              >
+                <QRCodeSVG 
+                  value={`https://example.com/pay?order_id=${Date.now()}&amount=${price}`}
+                  size={200}
+                  level="M"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Сумма к оплате: <span className="font-semibold">{formatPrice(price)}</span>
+              </p>
+              <Button 
+                onClick={handleQRPayment}
+                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+              >
+                Я оплатил
+              </Button>
             </div>
           </div>
         )}
