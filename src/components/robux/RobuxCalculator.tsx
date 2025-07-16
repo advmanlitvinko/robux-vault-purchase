@@ -179,7 +179,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
               </div>
               
               <Button 
-                variant="robux" 
+                variant="outline"
                 size="lg"
                 onClick={() => {
                   const currentCartQuantity = getCartQuantity(customAmount[0]);
@@ -282,7 +282,7 @@ export function RobuxCalculator({ onBuy, onOpenCart }: RobuxCalculatorProps) {
                         />
                       </div>
                       <Button 
-                        variant="robux" 
+                        variant="outline" 
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
