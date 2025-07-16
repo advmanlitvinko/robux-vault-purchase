@@ -8,7 +8,7 @@ import { useCart } from "@/hooks/useCart";
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCheckout: (total: number) => void;
+  onCheckout: (total: number, items: any[]) => void;
 }
 
 export function CartModal({ isOpen, onClose, onCheckout }: CartModalProps) {

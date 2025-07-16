@@ -19,12 +19,14 @@ const Index = () => {
     price: number;
     isPet?: boolean;
     petName?: string;
+    cartItems?: any[];
   }>({
     isOpen: false,
     amount: 0,
     price: 0,
     isPet: false,
-    petName: ''
+    petName: '',
+    cartItems: []
   });
 
   const [cartModal, setCartModal] = useState(false);
@@ -40,7 +42,8 @@ const Index = () => {
       amount,
       price,
       isPet: false,
-      petName: ''
+      petName: '',
+      cartItems: []
     });
   };
 
@@ -50,7 +53,8 @@ const Index = () => {
       amount: 0,
       price,
       isPet: true,
-      petName
+      petName,
+      cartItems: []
     });
   };
 
@@ -60,7 +64,8 @@ const Index = () => {
       amount: 0,
       price: 0,
       isPet: false,
-      petName: ''
+      petName: '',
+      cartItems: []
     });
   };
 
