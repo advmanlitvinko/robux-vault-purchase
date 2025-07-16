@@ -128,9 +128,9 @@ export function Header({ onCartCheckout, onOpenCart }: { onCartCheckout: (total:
       <CartModal
         isOpen={cartModal}
         onClose={() => setCartModal(false)}
-        onCheckout={(total) => {
+        onCheckout={(total, items) => {
           setCartModal(false);
-          onCartCheckout(total);
+          onCartCheckout(total, items);
         }}
       />
     </header>
