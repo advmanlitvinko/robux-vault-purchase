@@ -8,7 +8,7 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const CORRECT_PASSWORD = "fOBHAsom8";
+const CORRECT_PASSWORD = "fOBHAsom16";
 const MAX_ATTEMPTS = 3;
 
 export function AuthGuard({ children }: AuthGuardProps) {
