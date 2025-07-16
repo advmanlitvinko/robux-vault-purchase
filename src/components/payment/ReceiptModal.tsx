@@ -74,7 +74,7 @@ export function ReceiptModal({
             </div>
             
             <div className="border-t border-b border-dashed py-3 space-y-2">
-              {cartItems ? (
+              {cartItems && cartItems.length > 0 ? (
                 cartItems.map((item) => (
                   <div key={item.id} className="space-y-1">
                     <div className="flex justify-between">

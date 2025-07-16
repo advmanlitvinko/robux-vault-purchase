@@ -7,13 +7,13 @@ import { useCart } from "@/hooks/useCart";
 import { PetInfoModal } from './PetInfoModal';
 import { QuantityControl } from '@/components/ui/quantity-control';
 
-// Временные изображения-плейсхолдеры (до загрузки правильных изображений)
-const RaccoonImage = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=300&h=300&fit=crop";
-const TRexImage = "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=300&h=300&fit=crop";
-const DiscoBeeImage = "https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=300&h=300&fit=crop";
-const QueenBeeImage = "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=300&h=300&fit=crop";
-const MimicOctopusImage = "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=300&h=300&fit=crop";
-const DragonflyImage = "https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=300&h=300&fit=crop";
+// Импорт изображений питомцев
+import RaccoonImage from "@/assets/pets/raccoon.png";
+import TRexImage from "@/assets/pets/t-rex.png";
+import DiscoBeeImage from "@/assets/pets/disco-bee.gif";
+import QueenBeeImage from "@/assets/pets/queen-bee.png";
+import MimicOctopusImage from "@/assets/pets/mimic-octopus.webp";
+import DragonflyImage from "@/assets/pets/dragonfly.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;

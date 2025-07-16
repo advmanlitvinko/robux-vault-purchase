@@ -85,17 +85,23 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            💳 Оплата {cartItems ? `${formatPrice(price)}` : (isPet ? petName : `${formatAmount(amount)} Robux`)}
+            💳 Оплата {cartItems && cartItems.length > 0 ? (
+              cartItems.length === 1 
+                ? cartItems[0].type === 'pet' 
+                  ? cartItems[0].name 
+                  : `${formatAmount(cartItems[0].amount || 0)} Robux`
+                : `${cartItems.length} товар${cartItems.length > 1 ? 'ов' : ''}`
+            ) : (isPet ? petName : `${formatAmount(amount)} Robux`)}
           </DialogTitle>
           <DialogDescription>
-            {cartItems ? (
+            {cartItems && cartItems.length > 0 ? (
               <div className="space-y-1">
                  {cartItems.map((item) => (
                    <div key={item.id} className="text-sm">
                      {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
                    </div>
                  ))}
-                 <div className="font-medium">Итого: {formatPrice(price)}</div>
+                 <div className="font-medium mt-2">Итого: {formatPrice(price)}</div>
               </div>
             ) : (
               `Сумма к оплате: ${formatPrice(price)}`
@@ -172,13 +178,13 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
                 ✅ Оплата прошла успешно!
               </p>
               <p className="text-sm">
-                {cartItems ? (
+                {cartItems && cartItems.length > 0 ? (
                   <div className="space-y-1">
                     {cartItems.map((item) => (
                       <div key={item.id}>
                         {item.type === 'pet' 
-                          ? `${item.name} был(а) отправлен(а) на аккаунт "${nickname}"` 
-                          : `${formatAmount(item.amount || 0)} Robux (${item.quantity}x) были зачислены на аккаунт "${nickname}"`
+                          ? `${item.name} ${item.quantity > 1 ? `(${item.quantity}x) ` : ''}был(а) отправлен(а) на аккаунт "${nickname}"` 
+                          : `${formatAmount(item.amount || 0)} Robux ${item.quantity > 1 ? `(${item.quantity}x) ` : ''}были зачислены на аккаунт "${nickname}"`
                         }
                       </div>
                     ))}
