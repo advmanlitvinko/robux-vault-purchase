@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Zap, Star, Crown, Sparkles, Info } from "lucide-react";
 import { PetInfoModal } from './PetInfoModal';
 
-// Импорт изображений питомцев
-import RaccoonImage from "@/assets/pets/raccoon.png";
-import TRexImage from "@/assets/pets/t-rex.png";
-import DiscoBeeImage from "@/assets/pets/disco-bee.gif";
-import QueenBeeImage from "@/assets/pets/queen-bee.png";
-import MimicOctopusImage from "@/assets/pets/mimic-octopus.webp";
-import DragonflyImage from "@/assets/pets/dragonfly.png";
+// Прямые ссылки на изображения питомцев с Imgur
+const RaccoonImage = "https://i.imgur.com/JqSXdnW.png";
+const TRexImage = "https://i.imgur.com/62X40H6.png";
+const DiscoBeeImage = "https://i.imgur.com/izvUMJx.png";
+const QueenBeeImage = "https://i.imgur.com/K5vm4zw.png";
+const MimicOctopusImage = "https://i.imgur.com/FbzxJDD.png";
+const DragonflyImage = "https://i.imgur.com/VpukYFb.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;
