@@ -10,9 +10,9 @@ import { QuantityControl } from '@/components/ui/quantity-control';
 // Импорт изображений питомцев
 import RaccoonImage from "@/assets/pets/raccoon.png";
 import TRexImage from "@/assets/pets/t-rex.png";
-import DiscoBeeImage from "@/assets/pets/disco-bee.png";
+import DiscoBeeImage from "@/assets/pets/disco-bee.gif";
 import QueenBeeImage from "@/assets/pets/queen-bee.png";
-import MimicOctopusImage from "@/assets/pets/mimic-octopus.png";
+import MimicOctopusImage from "@/assets/pets/mimic-octopus.webp";
 import DragonflyImage from "@/assets/pets/dragonfly.png";
 
 interface PetsSectionProps {
@@ -24,7 +24,7 @@ const PETS_DATA = [
     id: "pet-raccoon",
     name: "Raccoon",
     displayName: "Енот",
-    price: 25000,
+    price: 549,
     image: RaccoonImage,
     icon: Heart,
     rarity: "Divine",
@@ -37,7 +37,7 @@ const PETS_DATA = [
     id: "pet-trex",
     name: "T-Rex",
     displayName: "Ти-Рекс",
-    price: 45000,
+    price: 899,
     image: TRexImage,
     icon: Star,
     rarity: "Divine",
@@ -50,7 +50,7 @@ const PETS_DATA = [
     id: "pet-disco-bee",
     name: "Disco Bee",
     displayName: "Disco Bee",
-    price: 35000,
+    price: 999,
     image: DiscoBeeImage,
     icon: Sparkles,
     rarity: "Divine",
@@ -63,7 +63,7 @@ const PETS_DATA = [
     id: "pet-queen-bee",
     name: "Queen Bee",
     displayName: "Королева пчел",
-    price: 30000,
+    price: 299,
     image: QueenBeeImage,
     icon: Crown,
     rarity: "Divine",
@@ -76,7 +76,7 @@ const PETS_DATA = [
     id: "pet-octopus",
     name: "Mimic Octopus",
     displayName: "Подражательный осьминог",
-    price: 40000,
+    price: 299,
     image: MimicOctopusImage,
     icon: Zap,
     rarity: "Мифический",
@@ -89,7 +89,7 @@ const PETS_DATA = [
     id: "pet-dragonfly",
     name: "Dragonfly",
     displayName: "Стрекоза",
-    price: 28000,
+    price: 299,
     image: DragonflyImage,
     icon: Bug,
     rarity: "Divine",
