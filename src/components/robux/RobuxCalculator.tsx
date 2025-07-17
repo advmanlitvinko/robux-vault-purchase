@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Coins, Zap, Star, Crown } from "lucide-react";
+import { Coins, Zap, Star, Crown, Check } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { QuantityControl } from "@/components/ui/quantity-control";
 
@@ -27,6 +27,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
   const [hoveredPackage, setHoveredPackage] = useState<number | null>(null);
+  const [showAddedMessage, setShowAddedMessage] = useState<string | null>(null);
   const { items, addItem, updateQuantity } = useCart();
 
   const currentAmount = isCustomMode ? customAmount[0] : selectedPackage || 0;
@@ -69,6 +70,10 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
       amount: amount
     };
     addItem(item);
+    
+    // Показать сообщение о добавлении на 2-3 секунды
+    setShowAddedMessage(`robux-${amount}`);
+    setTimeout(() => setShowAddedMessage(null), 2500);
   };
 
   const getCartQuantity = (amount: number) => {
@@ -117,25 +122,37 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                 </p>
               </div>
               
-              {getCartQuantity(customAmount[0]) === 0 ? (
-                <Button 
-                  variant="default"
-                  size="lg"
-                  onClick={() => handleAddToCart(customAmount[0], currentPrice)}
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  <Coins className="w-5 h-5 mr-2" />
-                  Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
-                </Button>
-              ) : (
-                <QuantityControl
-                  quantity={getCartQuantity(customAmount[0])}
-                  onIncrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) + 1)}
-                  onDecrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) - 1)}
-                  onAdd={() => handleAddToCart(customAmount[0], currentPrice)}
-                  isInCart={true}
-                />
-              )}
+              <div className="relative">
+                {getCartQuantity(customAmount[0]) === 0 ? (
+                  <Button 
+                    variant="default"
+                    size="lg"
+                    onClick={() => handleAddToCart(customAmount[0], currentPrice)}
+                    className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <Coins className="w-5 h-5 mr-2" />
+                    Купить
+                  </Button>
+                ) : (
+                  <QuantityControl
+                    quantity={getCartQuantity(customAmount[0])}
+                    onIncrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) + 1)}
+                    onDecrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) - 1)}
+                    onAdd={() => handleAddToCart(customAmount[0], currentPrice)}
+                    isInCart={true}
+                  />
+                )}
+                
+                {/* Сообщение о добавлении */}
+                {showAddedMessage === `robux-${customAmount[0]}` && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 animate-fade-in rounded-lg">
+                    <div className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                      <Check className="w-4 h-4" />
+                      <span className="text-sm font-medium">Товар добавлен в корзину</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
@@ -186,28 +203,40 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                     </div>
                     
                     
-                    {getCartQuantity(pkg.amount) === 0 ? (
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(pkg.amount, pkg.price);
-                        }}
-                        className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                      >
-                        <Coins className="w-4 h-4 mr-1" />
-                        Купить
-                      </Button>
-                    ) : (
-                      <QuantityControl
-                        quantity={getCartQuantity(pkg.amount)}
-                        onIncrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) + 1)}
-                        onDecrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) - 1)}
-                        onAdd={() => handleAddToCart(pkg.amount, pkg.price)}
-                        isInCart={true}
-                      />
-                    )}
+                    <div className="relative">
+                      {getCartQuantity(pkg.amount) === 0 ? (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(pkg.amount, pkg.price);
+                          }}
+                          className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                        >
+                          <Coins className="w-4 h-4 mr-1" />
+                          Купить
+                        </Button>
+                      ) : (
+                        <QuantityControl
+                          quantity={getCartQuantity(pkg.amount)}
+                          onIncrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) + 1)}
+                          onDecrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) - 1)}
+                          onAdd={() => handleAddToCart(pkg.amount, pkg.price)}
+                          isInCart={true}
+                        />
+                      )}
+                      
+                      {/* Сообщение о добавлении */}
+                      {showAddedMessage === `robux-${pkg.amount}` && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 animate-fade-in rounded-lg">
+                          <div className="bg-green-500 text-white px-3 py-2 rounded-lg flex items-center gap-2">
+                            <Check className="w-4 h-4" />
+                            <span className="text-xs font-medium">Добавлено в корзину</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );

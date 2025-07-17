@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Minus, Sparkles, Info, Check } from "lucide-react";
+import { Plus, Minus, Info, Check } from "lucide-react";
 import { useCart } from '@/contexts/CartContext';
 
 interface PetCardProps {
@@ -36,7 +36,6 @@ const getRarityColor = (rarity: string) => {
 export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
   const { items, addItem, updateQuantity } = useCart();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
-  const [showQuickBuyNotification, setShowQuickBuyNotification] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -60,13 +59,9 @@ export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
       type: 'pet'
     });
 
-    // Показать сообщение о добавлении
+    // Показать сообщение о добавлении на 2-3 секунды
     setShowAddedMessage(true);
-    setTimeout(() => setShowAddedMessage(false), 2000);
-
-    // Показать уведомление о быстрой покупке
-    setShowQuickBuyNotification(true);
-    setTimeout(() => setShowQuickBuyNotification(false), 10000);
+    setTimeout(() => setShowAddedMessage(false), 2500);
   };
 
   const handleQuantityChange = (change: number) => {
@@ -139,11 +134,11 @@ export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
               Купить
             </Button>
           ) : (
-            <div className="flex items-center justify-center gap-3 p-2 border rounded-lg">
+            <div className="flex items-center justify-center gap-3 p-2 border rounded-lg bg-background/50">
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
                 onClick={() => handleQuantityChange(-1)}
               >
                 <Minus className="h-3 w-3" />
@@ -154,7 +149,7 @@ export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
                 onClick={() => handleQuantityChange(1)}
               >
                 <Plus className="h-3 w-3" />
@@ -163,34 +158,6 @@ export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
           )}
         </CardContent>
       </Card>
-
-      {/* Уведомление о быстрой покупке */}
-      {showQuickBuyNotification && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-slide-in-right">
-          <div className="bg-card border border-border rounded-lg shadow-lg p-4 max-w-sm">
-            <div className="flex items-center gap-3">
-              <img 
-                src={pet.image} 
-                alt={pet.displayName}
-                className="w-12 h-12 object-cover rounded"
-              />
-              <div className="flex-1">
-                <h4 className="font-medium text-sm">{pet.displayName}</h4>
-                <Button 
-                  size="sm" 
-                  className="mt-2 w-full"
-                  onClick={() => {
-                    onQuickBuy(pet);
-                    setShowQuickBuyNotification(false);
-                  }}
-                >
-                  Купить сейчас
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
