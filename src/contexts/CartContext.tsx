@@ -43,17 +43,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       
       // При добавлении нового товара
-      const newItemWithQuantity = { ...newItem, quantity: 1 };
+      const itemWithImage = {
+        ...newItem,
+        image: newItem.type === 'robux' ? '/api/placeholder/60/60' : newItem.image,
+        quantity: 1
+      };
       
       // Если это первый товар в корзине, показываем quickBuy окно
       if (prev.length === 0) {
-        setQuickBuyItem(newItemWithQuantity);
+        setQuickBuyItem(itemWithImage);
       } else {
         // Если уже есть товары в корзине, скрываем quickBuy окно
         setQuickBuyItem(null);
       }
       
-      return [...prev, newItemWithQuantity];
+      return [...prev, itemWithImage];
     });
   };
 

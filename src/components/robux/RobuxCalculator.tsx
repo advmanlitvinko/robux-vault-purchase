@@ -137,7 +137,10 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                   <QuantityControl
                     quantity={getCartQuantity(customAmount[0])}
                     onIncrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) + 1)}
-                    onDecrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) - 1)}
+                    onDecrease={() => {
+                      const newQuantity = getCartQuantity(customAmount[0]) - 1;
+                      updateQuantity(`robux-${customAmount[0]}`, newQuantity);
+                    }}
                     onAdd={() => handleAddToCart(customAmount[0], currentPrice)}
                     isInCart={true}
                   />
@@ -145,8 +148,8 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                 
                 {/* Сообщение о добавлении */}
                 {showAddedMessage === `robux-${customAmount[0]}` && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 animate-fade-in rounded-lg">
-                    <div className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  <div className="absolute top-0 left-0 right-0 flex justify-center -mt-16 z-10">
+                    <div className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 animate-fade-in shadow-lg">
                       <Check className="w-4 h-4" />
                       <span className="text-sm font-medium">Товар добавлен в корзину</span>
                     </div>
@@ -221,7 +224,10 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                         <QuantityControl
                           quantity={getCartQuantity(pkg.amount)}
                           onIncrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) + 1)}
-                          onDecrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) - 1)}
+                          onDecrease={() => {
+                            const newQuantity = getCartQuantity(pkg.amount) - 1;
+                            updateQuantity(`robux-${pkg.amount}`, newQuantity);
+                          }}
                           onAdd={() => handleAddToCart(pkg.amount, pkg.price)}
                           isInCart={true}
                         />
@@ -229,8 +235,8 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                       
                       {/* Сообщение о добавлении */}
                       {showAddedMessage === `robux-${pkg.amount}` && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 animate-fade-in rounded-lg">
-                          <div className="bg-green-500 text-white px-3 py-2 rounded-lg flex items-center gap-2">
+                        <div className="absolute top-0 left-0 right-0 flex justify-center -mt-12 z-10">
+                          <div className="bg-green-500 text-white px-3 py-2 rounded-lg flex items-center gap-2 animate-fade-in shadow-lg">
                             <Check className="w-4 h-4" />
                             <span className="text-xs font-medium">Добавлено в корзину</span>
                           </div>

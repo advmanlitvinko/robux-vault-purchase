@@ -37,7 +37,6 @@ export const QuantityControl = ({
         variant="outline"
         size="sm"
         className="h-8 w-8 p-0 border-primary/20 hover:bg-primary hover:text-primary-foreground"
-        disabled={quantity <= 1}
       >
         <Minus className="h-4 w-4" />
       </Button>

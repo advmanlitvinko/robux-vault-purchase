@@ -105,8 +105,8 @@ export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
             
             {/* Сообщение о добавлении */}
             {showAddedMessage && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 animate-fade-in">
-                <div className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+              <div className="absolute top-0 left-0 right-0 flex justify-center -mt-16 z-10">
+                <div className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 animate-fade-in shadow-lg">
                   <Check className="w-4 h-4" />
                   <span className="text-sm font-medium">Товар добавлен в корзину</span>
                 </div>
