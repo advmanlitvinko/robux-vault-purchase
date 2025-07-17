@@ -65,7 +65,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
       name: 'Robux',
       displayName: `${formatAmount(amount)} Robux`,
       price: price,
-      image: 'https://i.imgur.com/MTv7K4H.png',
+      image: 'https://i.imgur.com/UhLYb5G.png',
       type: 'robux' as const,
       amount: amount
     };
