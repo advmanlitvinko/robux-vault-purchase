@@ -26,8 +26,21 @@ export function ReceiptModal({
   if (!orderData) return null;
 
   const transactionId = Math.random().toString(36).substr(2, 9).toUpperCase();
-  const cardNumber = "**** **** **** 1234";
   const currentDate = new Date().toLocaleString('ru-RU');
+  
+  // Разные концовки карт для разных способов оплаты
+  const getCardNumber = (paymentMethod: string) => {
+    const cardEndings = {
+      'card': '**** **** **** 4256',
+      'sbp': '**** **** **** 3312', 
+      'mobile': '**** **** **** 7891',
+      'yoomoney': '**** **** **** 5642',
+      'paypal': '**** **** **** 9107'
+    };
+    return cardEndings[paymentMethod as keyof typeof cardEndings] || '**** **** **** 4256';
+  };
+
+  const cardNumber = getCardNumber(orderData.paymentMethod);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -95,7 +108,11 @@ export function ReceiptModal({
             <div className="flex justify-between">
               <span>Способ оплаты:</span>
               <span className="font-medium">
-                {orderData.paymentMethod === 'sbp' ? 'СБП' : 'Банковская карта'}
+                {orderData.paymentMethod === 'sbp' ? 'СБП' : 
+                 orderData.paymentMethod === 'card' ? 'Банковская карта' :
+                 orderData.paymentMethod === 'mobile' ? 'Мобильный платёж' :
+                 orderData.paymentMethod === 'yoomoney' ? 'ЮMoney' :
+                 orderData.paymentMethod === 'paypal' ? 'PayPal' : 'Банковская карта'}
               </span>
             </div>
             

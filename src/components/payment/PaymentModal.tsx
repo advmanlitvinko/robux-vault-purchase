@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2, QrCode, DollarSign } from "lucide-react";
+import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2, QrCode, DollarSign, ArrowLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { ReceiptModal } from './ReceiptModal';
 import { useCart } from '@/contexts/CartContext';
@@ -30,19 +31,21 @@ interface PaymentModalProps {
 }
 
 const PAYMENT_METHODS = [
-  { id: 'card', name: 'Банковская карта', icon: CreditCard, popular: true },
-  { id: 'sbp', name: 'СБП', icon: QrCode, popular: true },
-  { id: 'mobile', name: 'Мобильный платёж', icon: Smartphone, popular: false },
-  { id: 'yoomoney', name: 'ЮMoney', icon: Wallet, popular: false },
-  { id: 'paypal', name: 'PayPal', icon: DollarSign, popular: false },
+  { id: 'sbp', name: 'СБП (Система быстрых платежей)', icon: QrCode, popular: true, emoji: '📱' },
+  { id: 'card', name: 'Банковская карта', icon: CreditCard, popular: false, emoji: '💳' },
+  { id: 'mobile', name: 'Мобильный платёж', icon: Smartphone, popular: false, emoji: '📱' },
+  { id: 'yoomoney', name: 'ЮMoney', icon: Wallet, popular: false, emoji: '💰' },
+  { id: 'paypal', name: 'PayPal', icon: DollarSign, popular: false, emoji: '🌍' },
 ];
 
 export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {
   const { clearCart } = useCart();
   const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success' | 'qr'>('nickname');
   const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [isEmailMasked, setIsEmailMasked] = useState(true);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -55,6 +58,35 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('ru-RU').format(amount);
+  };
+
+  // Загрузка email из cookies
+  useEffect(() => {
+    if (step === 'payment') {
+      const savedEmail = getCookie('user_email');
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setIsEmailMasked(true);
+      }
+    }
+  }, [step]);
+
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return '';
+  };
+
+  const setCookie = (name: string, value: string, days: number = 30) => {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+  };
+
+  const maskEmail = (email: string) => {
+    const [name, domain] = email.split('@');
+    if (name.length <= 2) return email;
+    return `${name[0]}${'*'.repeat(name.length - 2)}${name[name.length - 1]}@${domain}`;
   };
 
   const handleNicknameSubmit = () => {
@@ -88,6 +120,11 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
   };
 
   const handleOrderSuccess = () => {
+    // Сохраняем email в cookies
+    if (email && !isEmailMasked) {
+      setCookie('user_email', email);
+    }
+    
     // Очищаем корзину после успешной оплаты
     clearCart();
     setStep('success');
@@ -96,10 +133,24 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
   const handleClose = () => {
     setStep('nickname');
     setNickname('');
+    setEmail('');
     setSelectedMethod(null);
     setShowReceipt(false);
+    setIsEmailMasked(true);
     onClose();
   };
+
+  // Сброс состояния при открытии модального окна
+  useEffect(() => {
+    if (isOpen) {
+      setStep('nickname');
+      setNickname('');
+      setEmail('');
+      setSelectedMethod(null);
+      setShowReceipt(false);
+      setIsEmailMasked(true);
+    }
+  }, [isOpen]);
 
   const handleBackToShop = () => {
     handleClose();
@@ -143,14 +194,17 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
         </DialogHeader>
 
         {step === 'nickname' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="text-sm font-medium">Введите ваш Roblox-ник</label>
+              <Label htmlFor="nickname" className="text-base font-medium">
+                Введите ваш игровой ник
+              </Label>
               <Input
+                id="nickname"
                 placeholder="Ваш никнейм в Roblox"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="mt-1"
+                className="mt-2"
               />
             </div>
             <Button 
@@ -164,38 +218,82 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
         )}
 
         {step === 'payment' && (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Выберите способ оплаты:
-            </p>
-            <div className="grid grid-cols-1 gap-3">
-              {PAYMENT_METHODS.map((method) => {
-                const Icon = method.icon;
-                return (
-                  <div 
-                    key={method.id}
-                    className="relative group cursor-pointer p-4 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-accent/50 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md"
-                    onClick={() => handlePaymentSelect(method.id)}
-                  >
-                    {method.popular && (
-                      <Badge className="absolute -top-2 -right-2 bg-primary/90 text-primary-foreground text-xs z-10 shadow-sm">
-                        Популярный
-                      </Badge>
-                    )}
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                        <Icon className="w-5 h-5 text-primary" />
+          <div className="space-y-6">
+            <Button
+              variant="ghost"
+              onClick={() => setStep('nickname')}
+              className="mb-4 p-0 h-auto"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Назад
+            </Button>
+
+            <div className="space-y-3">
+              <div className="p-3 bg-muted rounded">
+                <div className="text-sm text-muted-foreground">Игровой ник:</div>
+                <div className="font-medium">{nickname}</div>
+              </div>
+
+              <div>
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email для получения чека
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={isEmailMasked && email ? maskEmail(email) : email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setIsEmailMasked(false);
+                  }}
+                  onFocus={() => setIsEmailMasked(false)}
+                  placeholder="ваш@email.com"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="font-medium">Способ оплаты:</h3>
+              <div className="space-y-2">
+                {PAYMENT_METHODS.map((method, index) => {
+                  const Icon = method.icon;
+                  
+                  return (
+                    <button
+                      key={method.id}
+                      onClick={() => handlePaymentSelect(method.id)}
+                      className="w-full p-4 border rounded-lg text-left transition-all duration-300 
+                        animate-fade-in hover-scale relative overflow-hidden group
+                        border-border hover:border-primary hover:shadow-md hover:bg-accent/50"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">{method.emoji}</span>
+                            <Icon className="w-5 h-5 transition-colors text-foreground group-hover:text-primary" />
+                          </div>
+                          <span className="font-medium transition-colors text-foreground">
+                            {method.name}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          {method.popular && (
+                            <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded animate-pulse">
+                              Популярно
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                          {method.name}
-                        </span>
-                      </div>
-                      <div className="w-4 h-4 rounded-full border-2 border-muted-foreground group-hover:border-primary transition-colors"></div>
-                    </div>
-                  </div>
-                );
-              })}
+                      
+                      {/* Hover gradient effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
@@ -248,32 +346,57 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
 
         {step === 'success' && (
           <div className="text-center space-y-4 py-4">
-            <CheckCircle className="w-16 h-16 text-success mx-auto" />
-            <div className="space-y-2">
-              <p className="text-lg font-bold text-success">
-                ✅ Оплата прошла успешно!
-              </p>
-              <p className="text-sm">
-                {cartItems && cartItems.length > 0 ? (
-                  <div className="space-y-1">
-                    {cartItems.map((item) => (
-                      <div key={item.id}>
-                        {item.type === 'pet' 
-                          ? `${item.name} ${item.quantity > 1 ? `(${item.quantity}x) ` : ''}был(а) отправлен(а) на аккаунт "${nickname}"` 
-                          : `${formatAmount(item.amount || 0)} Robux ${item.quantity > 1 ? `(${item.quantity}x) ` : ''}были зачислены на аккаунт "${nickname}"`
-                        }
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  isPet ? `${petName} был(а) отправлен(а) на аккаунт "${nickname}"` : `${formatAmount(amount)} Robux были зачислены на аккаунт "${nickname}"`
-                )}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                ⏱ Проверка может занять до 30 минут
-              </p>
+            <div className="flex justify-center">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
             </div>
+            
             <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-green-600 mb-2">
+                Оплата прошла успешно!
+              </h3>
+              <p className="text-muted-foreground">Спасибо за ваш заказ</p>
+            </div>
+
+            <div className="space-y-3 p-4 border rounded">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Игровой ник: </span>
+                <span className="font-medium">{nickname}</span>
+              </div>
+              
+              {cartItems && cartItems.length > 0 ? (
+                cartItems.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span>
+                      {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} x{item.quantity}
+                    </span>
+                    <span>{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex justify-between text-sm">
+                  <span>
+                    {isPet ? petName : `${formatAmount(amount)} Robux`}
+                  </span>
+                  <span>{formatPrice(price)}</span>
+                </div>
+              )}
+              
+              <div className="border-t pt-2 flex justify-between font-semibold">
+                <span>Итого:</span>
+                <span>{formatPrice(price)}</span>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              Чек отправлен на почту {email ? maskEmail(email) : 'указанную вами'}
+            </p>
+
+            <div className="space-y-2">
+              <Button onClick={handleShowReceipt} variant="outline" className="w-full">
+                Показать чек
+              </Button>
               <Button onClick={handleBackToShop} className="w-full">
                 Вернуться в магазин
               </Button>
@@ -288,6 +411,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
         onClose={handleCloseReceipt}
         orderData={{
           nickname,
+          email,
           items: cartItems || [{
             id: 'single-item',
             name: isPet ? petName : 'Robux',
@@ -298,7 +422,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
             amount: isPet ? undefined : amount
           }],
           totalPrice: price,
-          paymentMethod: 'card'
+          paymentMethod: selectedMethod || 'card'
         }}
       />
     </Dialog>
