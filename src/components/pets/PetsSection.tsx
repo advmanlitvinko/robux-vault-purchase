@@ -13,7 +13,6 @@ const DragonflyImage = "https://i.imgur.com/VpukYFb.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;
-  onQuickBuy: (pet: any) => void;
 }
 
 const PETS_DATA = [
@@ -97,7 +96,7 @@ const PETS_DATA = [
   }
 ];
 
-export function PetsSection({ onBuyPet, onQuickBuy }: PetsSectionProps) {
+export function PetsSection({ onBuyPet }: PetsSectionProps) {
   const [selectedPet, setSelectedPet] = useState<typeof PETS_DATA[0] | null>(null);
 
   const openPetInfo = (pet: typeof PETS_DATA[0]) => {
@@ -131,7 +130,6 @@ export function PetsSection({ onBuyPet, onQuickBuy }: PetsSectionProps) {
                 key={pet.id}
                 pet={pet}
                 onShowInfo={openPetInfo}
-                onQuickBuy={onQuickBuy}
               />
             ))}
           </div>
@@ -143,7 +141,6 @@ export function PetsSection({ onBuyPet, onQuickBuy }: PetsSectionProps) {
                 key={pet.id}
                 pet={pet}
                 onShowInfo={openPetInfo}
-                onQuickBuy={onQuickBuy}
               />
             ))}
           </div>

@@ -143,7 +143,7 @@ const Index = () => {
         </section>
 
         {/* Питомцы */}
-        <PetsSection onBuyPet={handleBuyPet} onQuickBuy={handleQuickBuy} />
+        <PetsSection onBuyPet={handleBuyPet} />
 
         {/* Инструкция */}
         <div id="instructions">

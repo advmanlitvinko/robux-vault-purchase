@@ -17,7 +17,6 @@ interface PetCardProps {
     description: string;
   };
   onShowInfo: (pet: any) => void;
-  onQuickBuy: (pet: any) => void;
 }
 
 const getRarityColor = (rarity: string) => {
@@ -33,7 +32,7 @@ const getRarityColor = (rarity: string) => {
   }
 };
 
-export function PetCard({ pet, onShowInfo, onQuickBuy }: PetCardProps) {
+export function PetCard({ pet, onShowInfo }: PetCardProps) {
   const { items, addItem, updateQuantity } = useCart();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
 
