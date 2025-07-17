@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2, QrCode } from "lucide-react";
+import { CheckCircle, CreditCard, Smartphone, Wallet, Building, Loader2, QrCode, DollarSign } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { ReceiptModal } from './ReceiptModal';
+import { useCart } from '@/contexts/CartContext';
 
 interface CartItem {
   id: string;
@@ -31,12 +32,13 @@ interface PaymentModalProps {
 const PAYMENT_METHODS = [
   { id: 'card', name: 'Банковская карта', icon: CreditCard, popular: true },
   { id: 'sbp', name: 'СБП', icon: QrCode, popular: true },
+  { id: 'mobile', name: 'Мобильный платёж', icon: Smartphone, popular: false },
   { id: 'yoomoney', name: 'ЮMoney', icon: Wallet, popular: false },
-  { id: 'qiwi', name: 'QIWI', icon: Building, popular: false },
-  { id: 'paypal', name: 'PayPal', icon: CreditCard, popular: false },
+  { id: 'paypal', name: 'PayPal', icon: DollarSign, popular: false },
 ];
 
 export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {
+  const { clearCart } = useCart();
   const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success' | 'qr'>('nickname');
   const [nickname, setNickname] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
       
       // Имитация обработки платежа
       setTimeout(() => {
-        setStep('success');
+        handleOrderSuccess();
       }, 3000);
     }
   };
@@ -81,8 +83,14 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
     
     // Имитация обработки платежа СБП
     setTimeout(() => {
-      setStep('success');
+      handleOrderSuccess();
     }, 2000);
+  };
+
+  const handleOrderSuccess = () => {
+    // Очищаем корзину после успешной оплаты
+    clearCart();
+    setStep('success');
   };
 
   const handleClose = () => {
@@ -160,25 +168,32 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
             <p className="text-sm text-muted-foreground">
               Выберите способ оплаты:
             </p>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 gap-3">
               {PAYMENT_METHODS.map((method) => {
                 const Icon = method.icon;
                 return (
-                  <Card 
+                  <div 
                     key={method.id}
-                    className="cursor-pointer hover:bg-accent transition-colors relative"
+                    className="relative group cursor-pointer p-4 rounded-lg border border-border hover:border-primary/50 bg-card hover:bg-accent/50 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md"
                     onClick={() => handlePaymentSelect(method.id)}
                   >
                     {method.popular && (
-                      <Badge className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs">
+                      <Badge className="absolute -top-2 -right-2 bg-primary/90 text-primary-foreground text-xs z-10 shadow-sm">
                         Популярный
                       </Badge>
                     )}
-                    <CardContent className="p-4 flex items-center gap-3">
-                      <Icon className="w-6 h-6 text-primary" />
-                      <span className="font-medium">{method.name}</span>
-                    </CardContent>
-                  </Card>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <Icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                          {method.name}
+                        </span>
+                      </div>
+                      <div className="w-4 h-4 rounded-full border-2 border-muted-foreground group-hover:border-primary transition-colors"></div>
+                    </div>
+                  </div>
                 );
               })}
             </div>
