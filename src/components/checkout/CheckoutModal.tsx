@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ChevronDown, ChevronUp, CreditCard, Smartphone, ArrowLeft, Check, DollarSign, Wallet } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { CartItem } from '@/contexts/CartContext';
+import { CartItem, useCart } from '@/contexts/CartContext';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -53,6 +53,7 @@ const PAYMENT_METHODS = [
 ];
 
 export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutModalProps) {
+  const { clearCart } = useCart();
   const [step, setStep] = useState<'nickname' | 'payment' | 'sbp-qr' | 'processing' | 'success'>('nickname');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
@@ -147,6 +148,10 @@ export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutMod
     };
 
     onSuccess(orderData);
+    
+    // Очищаем корзину после успешной оплаты
+    clearCart();
+    
     setStep('success');
   };
 
