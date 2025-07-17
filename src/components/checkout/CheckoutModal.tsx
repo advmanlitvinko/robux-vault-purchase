@@ -34,24 +34,21 @@ const PAYMENT_METHODS = [
     name: 'Мобильный платёж',
     icon: Smartphone,
     popular: false,
-    emoji: '📱',
-    comingSoon: true
+    emoji: '📱'
   },
   {
     id: 'yumoney',
     name: 'ЮMoney',
     icon: Wallet,
     popular: false,
-    emoji: '💰',
-    comingSoon: true
+    emoji: '💰'
   },
   {
     id: 'paypal',
     name: 'PayPal',
     icon: DollarSign,
     popular: false,
-    emoji: '🌍',
-    comingSoon: true
+    emoji: '🌍'
   }
 ];
 
@@ -116,18 +113,11 @@ export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutMod
   };
 
   const handlePaymentSelect = (paymentId: string) => {
-    const method = PAYMENT_METHODS.find(m => m.id === paymentId);
-    
-    // Если метод помечен как "скоро будет доступно"
-    if (method?.comingSoon) {
-      return; // Пока не делаем ничего
-    }
-    
     setSelectedPayment(paymentId);
     if (paymentId === 'sbp') {
       setStep('sbp-qr');
     } else {
-      // Для всех остальных активных методов используем существующую логику
+      // Для всех остальных методов используем существующую логику
       setStep('processing');
       setTimeout(() => {
         handleOrderSuccess();
@@ -290,52 +280,38 @@ export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutMod
               <div className="space-y-2">
                 {PAYMENT_METHODS.map((method, index) => {
                   const Icon = method.icon;
-                  const isDisabled = method.comingSoon;
                   
                   return (
                     <button
                       key={method.id}
                       onClick={() => handlePaymentSelect(method.id)}
-                      disabled={isDisabled}
-                      className={`
-                        w-full p-4 border rounded-lg text-left transition-all duration-300 
+                      className="w-full p-4 border rounded-lg text-left transition-all duration-300 
                         animate-fade-in hover-scale relative overflow-hidden group
-                        ${isDisabled 
-                          ? 'border-muted cursor-not-allowed opacity-60 bg-muted/30' 
-                          : 'border-border hover:border-primary hover:shadow-md hover:bg-accent/50'
-                        }
-                      `}
+                        border-border hover:border-primary hover:shadow-md hover:bg-accent/50"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{method.emoji}</span>
-                            <Icon className={`w-5 h-5 transition-colors ${isDisabled ? 'text-muted-foreground' : 'text-foreground group-hover:text-primary'}`} />
+                            <Icon className="w-5 h-5 transition-colors text-foreground group-hover:text-primary" />
                           </div>
-                          <span className={`font-medium transition-colors ${isDisabled ? 'text-muted-foreground' : 'text-foreground'}`}>
+                          <span className="font-medium transition-colors text-foreground">
                             {method.name}
                           </span>
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          {method.popular && !isDisabled && (
+                          {method.popular && (
                             <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded animate-pulse">
                               Популярно
-                            </span>
-                          )}
-                          {isDisabled && (
-                            <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                              Скоро
                             </span>
                           )}
                         </div>
                       </div>
                       
                       {/* Hover gradient effect */}
-                      {!isDisabled && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      )}
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </button>
                   );
                 })}
