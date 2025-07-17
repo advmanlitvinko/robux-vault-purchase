@@ -161,8 +161,21 @@ export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutMod
     setEmail('');
     setSelectedPayment('');
     setShowAllItems(false);
+    setIsEmailMasked(true);
     onClose();
   };
+
+  // Сброс состояния при открытии модального окна
+  useEffect(() => {
+    if (isOpen) {
+      setStep('nickname');
+      setNickname('');
+      setEmail('');
+      setSelectedPayment('');
+      setShowAllItems(false);
+      setIsEmailMasked(true);
+    }
+  }, [isOpen]);
 
   const renderStep = () => {
     switch (step) {
