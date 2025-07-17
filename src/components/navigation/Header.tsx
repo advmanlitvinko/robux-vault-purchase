@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Cart } from "@/components/cart/Cart";
 
 const navItems = [
   { name: "Купить", href: "#buy" },
@@ -9,7 +10,11 @@ const navItems = [
   { name: "Поддержка", href: "#support" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  onCartCheckout: (items: any[]) => void;
+}
+
+export function Header({ onCartCheckout }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (href: string) => {
@@ -49,10 +54,12 @@ export function Header() {
               </button>
             ))}
           </nav>
+          <Cart onCheckout={onCartCheckout} />
         </div>
 
         {/* Мобильное меню */}
         <div className="flex items-center space-x-2 md:hidden">
+          <Cart onCheckout={onCartCheckout} />
           {/* Меню кнопка */}
           <Button
             variant="ghost"

@@ -8,8 +8,12 @@ import { PetsSection } from '@/components/pets/PetsSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
+import { CheckoutModal } from '@/components/checkout/CheckoutModal';
+import { useCart } from '@/contexts/CartContext';
+import { ReceiptModal } from '@/components/payment/ReceiptModal';
 
 const Index = () => {
+  const { clearCart } = useCart();
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     amount: number;
@@ -22,6 +26,16 @@ const Index = () => {
     price: 0,
     isPet: false,
     petName: '',
+  });
+
+  const [checkoutModal, setCheckoutModal] = useState({
+    isOpen: false,
+    items: [] as any[]
+  });
+
+  const [receiptModal, setReceiptModal] = useState({
+    isOpen: false,
+    orderData: null as any
   });
 
   const calculatorRef = useRef<HTMLDivElement>(null);
@@ -50,6 +64,37 @@ const Index = () => {
     });
   };
 
+  const handleQuickBuy = (pet: any) => {
+    setCheckoutModal({
+      isOpen: true,
+      items: [{
+        id: pet.id,
+        name: pet.name,
+        displayName: pet.displayName,
+        price: pet.price,
+        image: pet.image,
+        quantity: 1,
+        type: 'pet'
+      }]
+    });
+  };
+
+  const handleCartCheckout = (items: any[]) => {
+    setCheckoutModal({
+      isOpen: true,
+      items
+    });
+  };
+
+  const handleCheckoutSuccess = (orderData: any) => {
+    clearCart();
+    setCheckoutModal({ isOpen: false, items: [] });
+    setReceiptModal({
+      isOpen: true,
+      orderData
+    });
+  };
+
   const handleClosePayment = () => {
     setPaymentModal({
       isOpen: false,
@@ -64,7 +109,7 @@ const Index = () => {
     <AuthGuard>
       <div className="min-h-screen bg-background">
         {/* Шапка с навигацией */}
-        <Header />
+        <Header onCartCheckout={handleCartCheckout} />
         
         {/* Hero секция */}
         <HeroSection onGetStarted={handleGetStarted} />
@@ -85,7 +130,7 @@ const Index = () => {
         </section>
 
         {/* Питомцы */}
-        <PetsSection onBuyPet={handleBuyPet} />
+        <PetsSection onBuyPet={handleBuyPet} onQuickBuy={handleQuickBuy} />
 
         {/* Инструкция */}
         <div id="instructions">
@@ -110,6 +155,21 @@ const Index = () => {
           price={paymentModal.price}
           isPet={paymentModal.isPet}
           petName={paymentModal.petName}
+        />
+
+        {/* Модальное окно оформления заказа */}
+        <CheckoutModal
+          isOpen={checkoutModal.isOpen}
+          onClose={() => setCheckoutModal({ isOpen: false, items: [] })}
+          items={checkoutModal.items}
+          onSuccess={handleCheckoutSuccess}
+        />
+
+        {/* Модальное окно чека */}
+        <ReceiptModal
+          isOpen={receiptModal.isOpen}
+          onClose={() => setReceiptModal({ isOpen: false, orderData: null })}
+          orderData={receiptModal.orderData}
         />
       </div>
     </AuthGuard>

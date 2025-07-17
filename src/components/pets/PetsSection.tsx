@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Zap, Star, Crown, Sparkles, Info } from "lucide-react";
 import { PetInfoModal } from './PetInfoModal';
+import { PetCard } from '@/components/cart/PetCard';
+import { Zap, Star, Crown, Sparkles } from "lucide-react";
 
 // Прямые ссылки на изображения питомцев с Imgur
 const RaccoonImage = "https://i.imgur.com/JqSXdnW.png";
@@ -15,6 +13,7 @@ const DragonflyImage = "https://i.imgur.com/VpukYFb.png";
 
 interface PetsSectionProps {
   onBuyPet: (petName: string, price: number) => void;
+  onQuickBuy: (pet: any) => void;
 }
 
 const PETS_DATA = [
@@ -98,30 +97,8 @@ const PETS_DATA = [
   }
 ];
 
-const getRarityColor = (rarity: string) => {
-  switch (rarity) {
-    case "Divine":
-      return "bg-gradient-to-r from-yellow-400 to-orange-500";
-    case "Мифический":
-      return "bg-gradient-to-r from-purple-500 to-pink-500";
-    case "Эпический":
-      return "bg-gradient-to-r from-blue-500 to-cyan-500";
-    default:
-      return "bg-gradient-to-r from-gray-500 to-gray-600";
-  }
-};
-
-export function PetsSection({ onBuyPet }: PetsSectionProps) {
+export function PetsSection({ onBuyPet, onQuickBuy }: PetsSectionProps) {
   const [selectedPet, setSelectedPet] = useState<typeof PETS_DATA[0] | null>(null);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency: 'RUB',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(price);
-  };
 
   const openPetInfo = (pet: typeof PETS_DATA[0]) => {
     setSelectedPet(pet);
@@ -149,132 +126,26 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
         <div className="space-y-6">
           {/* Первый ряд */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {firstRow.map((pet) => {
-              const Icon = pet.icon;
-              
-              return (
-                <Card 
-                  key={pet.name}
-                  className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm border-2 hover:border-primary/50"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{pet.displayName}</CardTitle>
-                      <Badge className={`${getRarityColor(pet.rarity)} text-white border-0`}>
-                        {pet.rarity}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {pet.description}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Изображение питомца */}
-                    <div 
-                      className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 cursor-pointer"
-                      onClick={() => openPetInfo(pet)}
-                    >
-                      <img 
-                        src={pet.image} 
-                        alt={pet.displayName}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                        <div className="bg-white/90 rounded-full p-2">
-                          <Info className="w-5 h-5 text-primary" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Информация о цене */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="w-5 h-5 text-primary" />
-                        <span className="text-sm text-muted-foreground">Цена:</span>
-                      </div>
-                      <span className="text-xl font-bold text-primary">
-                        {formatPrice(pet.price)}
-                      </span>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => onBuyPet(pet.name, pet.price)}
-                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                    >
-                      <Sparkles className="w-4 h-4 mr-1" />
-                      Купить за {formatPrice(pet.price)}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {firstRow.map((pet) => (
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                onShowInfo={openPetInfo}
+                onQuickBuy={onQuickBuy}
+              />
+            ))}
           </div>
 
           {/* Второй ряд */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {secondRow.map((pet) => {
-              const Icon = pet.icon;
-              
-              return (
-                <Card 
-                  key={pet.name}
-                  className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm border-2 hover:border-primary/50"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{pet.displayName}</CardTitle>
-                      <Badge className={`${getRarityColor(pet.rarity)} text-white border-0`}>
-                        {pet.rarity}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {pet.description}
-                    </p>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Изображение питомца */}
-                    <div 
-                      className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 cursor-pointer"
-                      onClick={() => openPetInfo(pet)}
-                    >
-                      <img 
-                        src={pet.image} 
-                        alt={pet.displayName}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                        <div className="bg-white/90 rounded-full p-2">
-                          <Info className="w-5 h-5 text-primary" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Информация о цене */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className="w-5 h-5 text-primary" />
-                        <span className="text-sm text-muted-foreground">Цена:</span>
-                      </div>
-                      <span className="text-xl font-bold text-primary">
-                        {formatPrice(pet.price)}
-                      </span>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => onBuyPet(pet.name, pet.price)}
-                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                    >
-                      <Sparkles className="w-4 h-4 mr-1" />
-                      Купить за {formatPrice(pet.price)}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {secondRow.map((pet) => (
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                onShowInfo={openPetInfo}
+                onQuickBuy={onQuickBuy}
+              />
+            ))}
           </div>
         </div>
       </div>

@@ -273,12 +273,20 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
       <ReceiptModal
         isOpen={showReceipt}
         onClose={handleCloseReceipt}
-        amount={amount}
-        price={price}
-        nickname={nickname}
-        isPet={isPet}
-        petName={petName}
-        cartItems={cartItems}
+        orderData={{
+          nickname,
+          items: cartItems || [{
+            id: 'single-item',
+            name: isPet ? petName : 'Robux',
+            displayName: isPet ? petName : `${amount} Robux`,
+            price,
+            quantity: 1,
+            type: isPet ? 'pet' : 'robux',
+            amount: isPet ? undefined : amount
+          }],
+          totalPrice: price,
+          paymentMethod: 'card'
+        }}
       />
     </Dialog>
   );
