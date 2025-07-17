@@ -45,7 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // При добавлении нового товара
       const itemWithImage = {
         ...newItem,
-        image: newItem.type === 'robux' ? '/api/placeholder/60/60' : newItem.image,
+        image: newItem.type === 'robux' ? 'https://i.imgur.com/MTv7K4H.png' : newItem.image,
         quantity: 1
       };
       

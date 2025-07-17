@@ -159,7 +159,7 @@ export function CheckoutModal({ isOpen, onClose, items, onSuccess }: CheckoutMod
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center p-3 border rounded">
                   <div className="flex items-center gap-3">
-                    <img src={item.image} alt={item.displayName} className="w-10 h-10 rounded" />
+                    <img src={item.image} alt={item.displayName} className="h-12 w-auto object-contain mr-2" />
                     <div>
                       <div className="font-medium">{item.displayName}</div>
                       <div className="text-sm text-muted-foreground">x{item.quantity}</div>

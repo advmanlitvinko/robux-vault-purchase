@@ -47,13 +47,20 @@ export function QuickBuyToast({ onBuyNow }: QuickBuyToastProps) {
     >
       <Card className="shadow-2xl border-2 border-primary/20 bg-card/95 backdrop-blur-sm max-w-sm mx-auto">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-sm">{quickBuyItem.displayName}</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <img 
+              src={quickBuyItem.image} 
+              alt={quickBuyItem.displayName}
+              className="h-12 w-auto object-contain"
+            />
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm">{quickBuyItem.displayName}</h3>
+            </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClose}
-              className="h-6 w-6 p-0"
+              className="h-6 w-6 p-0 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
