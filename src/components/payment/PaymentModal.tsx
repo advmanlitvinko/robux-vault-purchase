@@ -33,6 +33,7 @@ const PAYMENT_METHODS = [
   { id: 'sbp', name: 'СБП', icon: QrCode, popular: true },
   { id: 'yoomoney', name: 'ЮMoney', icon: Wallet, popular: false },
   { id: 'qiwi', name: 'QIWI', icon: Building, popular: false },
+  { id: 'paypal', name: 'PayPal', icon: CreditCard, popular: false },
 ];
 
 export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {

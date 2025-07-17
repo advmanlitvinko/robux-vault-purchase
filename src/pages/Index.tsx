@@ -11,9 +11,10 @@ import { SupportSection } from '@/components/sections/SupportSection';
 import { CheckoutModal } from '@/components/checkout/CheckoutModal';
 import { useCart } from '@/contexts/CartContext';
 import { ReceiptModal } from '@/components/payment/ReceiptModal';
+import { QuickBuyToast } from '@/components/ui/quick-buy-toast';
 
 const Index = () => {
-  const { clearCart } = useCart();
+  const { clearCart, items, quickBuyItem, getTotalPrice } = useCart();
   const [paymentModal, setPaymentModal] = useState<{
     isOpen: boolean;
     amount: number;
@@ -77,6 +78,18 @@ const Index = () => {
         type: 'pet'
       }]
     });
+  };
+
+  const handleQuickBuyFromToast = () => {
+    if (quickBuyItem) {
+      setPaymentModal({
+        isOpen: true,
+        amount: quickBuyItem.amount || 0,
+        price: quickBuyItem.price,
+        isPet: quickBuyItem.type === 'pet',
+        petName: quickBuyItem.type === 'pet' ? quickBuyItem.name : ''
+      });
+    }
   };
 
   const handleCartCheckout = (items: any[]) => {
@@ -148,14 +161,17 @@ const Index = () => {
         </div>
 
         {/* Модальное окно оплаты */}
-        <PaymentModal
-          isOpen={paymentModal.isOpen}
-          onClose={handleClosePayment}
-          amount={paymentModal.amount}
-          price={paymentModal.price}
-          isPet={paymentModal.isPet}
-          petName={paymentModal.petName}
-        />
+      <PaymentModal
+        isOpen={paymentModal.isOpen}
+        onClose={handleClosePayment}
+        amount={paymentModal.amount}
+        price={paymentModal.price}
+        isPet={paymentModal.isPet}
+        petName={paymentModal.petName}
+        cartItems={items.length > 0 ? items : undefined}
+      />
+      
+      <QuickBuyToast onBuyNow={handleQuickBuyFromToast} />
 
         {/* Модальное окно оформления заказа */}
         <CheckoutModal

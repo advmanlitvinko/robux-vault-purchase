@@ -19,29 +19,53 @@ interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  quickBuyItem: CartItem | null;
+  setQuickBuyItem: (item: CartItem | null) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [quickBuyItem, setQuickBuyItem] = useState<CartItem | null>(null);
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
       const existingItem = prev.find(item => item.id === newItem.id);
       if (existingItem) {
+        // При увеличении количества существующего товара, убираем quickBuy окно
+        setQuickBuyItem(null);
         return prev.map(item =>
           item.id === newItem.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      return [...prev, { ...newItem, quantity: 1 }];
+      
+      // При добавлении нового товара
+      const newItemWithQuantity = { ...newItem, quantity: 1 };
+      
+      // Если это первый товар в корзине, показываем quickBuy окно
+      if (prev.length === 0) {
+        setQuickBuyItem(newItemWithQuantity);
+      } else {
+        // Если уже есть товары в корзине, скрываем quickBuy окно
+        setQuickBuyItem(null);
+      }
+      
+      return [...prev, newItemWithQuantity];
     });
   };
 
   const removeItem = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+    setItems(prev => {
+      const newItems = prev.filter(item => item.id !== id);
+      // Если удаляем товар и корзина становится пустой, убираем quickBuy окно
+      if (newItems.length === 0) {
+        setQuickBuyItem(null);
+      }
+      return newItems;
+    });
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -49,15 +73,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem(id);
       return;
     }
-    setItems(prev =>
-      prev.map(item =>
+    setItems(prev => {
+      const newItems = prev.map(item =>
         item.id === id ? { ...item, quantity } : item
-      )
-    );
+      );
+      
+      // Если изменяем количество и остался только один тип товара, обновляем quickBuy
+      if (newItems.length === 1) {
+        setQuickBuyItem(newItems[0]);
+      } else {
+        // Если несколько разных товаров, убираем quickBuy окно
+        setQuickBuyItem(null);
+      }
+      
+      return newItems;
+    });
   };
 
   const clearCart = () => {
     setItems([]);
+    setQuickBuyItem(null);
   };
 
   const getTotalItems = () => {
@@ -76,7 +111,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       clearCart,
       getTotalItems,
-      getTotalPrice
+      getTotalPrice,
+      quickBuyItem,
+      setQuickBuyItem
     }}>
       {children}
     </CartContext.Provider>

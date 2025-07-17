@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Coins, Zap, Star, Crown } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { QuantityControl } from "@/components/ui/quantity-control";
 
 interface RobuxCalculatorProps {
   onBuy: (amount: number, price: number) => void;
@@ -25,6 +27,7 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
   const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(true);
   const [hoveredPackage, setHoveredPackage] = useState<number | null>(null);
+  const { items, addItem, updateQuantity } = useCart();
 
   const currentAmount = isCustomMode ? customAmount[0] : selectedPackage || 0;
   const currentPrice = isCustomMode 
@@ -53,6 +56,24 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('ru-RU').format(amount);
+  };
+
+  const handleAddToCart = (amount: number, price: number) => {
+    const item = {
+      id: `robux-${amount}`,
+      name: 'Robux',
+      displayName: `${formatAmount(amount)} Robux`,
+      price: price,
+      image: '/placeholder.svg',
+      type: 'robux' as const,
+      amount: amount
+    };
+    addItem(item);
+  };
+
+  const getCartQuantity = (amount: number) => {
+    const item = items.find(item => item.id === `robux-${amount}`);
+    return item?.quantity || 0;
   };
 
   return (
@@ -96,15 +117,25 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                 </p>
               </div>
               
-              <Button 
-                variant="default"
-                size="lg"
-                onClick={() => onBuy(customAmount[0], currentPrice)}
-                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                <Coins className="w-5 h-5 mr-2" />
-                Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
-              </Button>
+              {getCartQuantity(customAmount[0]) === 0 ? (
+                <Button 
+                  variant="default"
+                  size="lg"
+                  onClick={() => handleAddToCart(customAmount[0], currentPrice)}
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <Coins className="w-5 h-5 mr-2" />
+                  Купить {formatAmount(customAmount[0])} Robux за {formatPrice(currentPrice)}
+                </Button>
+              ) : (
+                <QuantityControl
+                  quantity={getCartQuantity(customAmount[0])}
+                  onIncrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) + 1)}
+                  onDecrease={() => updateQuantity(`robux-${customAmount[0]}`, getCartQuantity(customAmount[0]) - 1)}
+                  onAdd={() => handleAddToCart(customAmount[0], currentPrice)}
+                  isInCart={true}
+                />
+              )}
             </div>
           )}
         </CardContent>
@@ -155,18 +186,28 @@ export function RobuxCalculator({ onBuy }: RobuxCalculatorProps) {
                     </div>
                     
                     
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onBuy(pkg.amount, pkg.price);
-                      }}
-                      className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                    >
-                      <Coins className="w-4 h-4 mr-1" />
-                      Купить сейчас
-                    </Button>
+                    {getCartQuantity(pkg.amount) === 0 ? (
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(pkg.amount, pkg.price);
+                        }}
+                        className="w-full text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                      >
+                        <Coins className="w-4 h-4 mr-1" />
+                        Купить
+                      </Button>
+                    ) : (
+                      <QuantityControl
+                        quantity={getCartQuantity(pkg.amount)}
+                        onIncrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) + 1)}
+                        onDecrease={() => updateQuantity(`robux-${pkg.amount}`, getCartQuantity(pkg.amount) - 1)}
+                        onAdd={() => handleAddToCart(pkg.amount, pkg.price)}
+                        isInCart={true}
+                      />
+                    )}
                   </CardContent>
                 </Card>
               );
