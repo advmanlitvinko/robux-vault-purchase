@@ -277,9 +277,6 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
               <Button onClick={handleBackToShop} className="w-full">
                 Вернуться в магазин
               </Button>
-              <Button variant="outline" className="w-full" onClick={handleShowReceipt}>
-                Показать чек
-              </Button>
             </div>
           </div>
         )}
