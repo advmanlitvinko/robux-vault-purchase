@@ -7,7 +7,7 @@ import { Zap, Star, Crown, Sparkles } from "lucide-react";
 const RaccoonImage = "https://i.imgur.com/JqSXdnW.png";
 const TRexImage = "https://i.imgur.com/62X40H6.png";
 const DiscoBeeImage = "https://i.imgur.com/izvUMJx.png";
-const KitsuneImage = "https://i.imgur.com/3MiXHb6.png";
+const KitsuneImage = "https://i.imgur.com/V0uqLl0.png";
 const MimicOctopusImage = "https://i.imgur.com/FbzxJDD.png";
 const DragonflyImage = "https://i.imgur.com/VpukYFb.png";
 
