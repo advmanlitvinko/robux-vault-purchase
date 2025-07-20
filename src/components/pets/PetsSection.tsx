@@ -7,7 +7,7 @@ import { Zap, Star, Crown, Sparkles } from "lucide-react";
 const RaccoonImage = "https://i.imgur.com/JqSXdnW.png";
 const TRexImage = "https://i.imgur.com/62X40H6.png";
 const DiscoBeeImage = "https://i.imgur.com/izvUMJx.png";
-const QueenBeeImage = "https://i.imgur.com/K5vm4zw.png";
+const KitsuneImage = "https://i.imgur.com/3MiXHb6.png";
 const MimicOctopusImage = "https://i.imgur.com/FbzxJDD.png";
 const DragonflyImage = "https://i.imgur.com/VpukYFb.png";
 
@@ -56,17 +56,17 @@ const PETS_DATA = [
     obtainChance: "0,25%"
   },
   {
-    id: "pet-queen-bee",
-    name: "Queen Bee",
-    displayName: "Королева пчел",
-    price: 299,
-    image: QueenBeeImage,
+    id: "pet-kitsune",
+    name: "Kitsune",
+    displayName: "Kitsune (Девятихвостая лиса)",
+    price: 3999,
+    image: KitsuneImage,
     icon: Crown,
-    rarity: "Divine",
-    description: "Величественная королева улья",
-    ability: "Примерно каждые 20 минут близлежащий фрукт магическим образом опыляется, применяя мутацию «Опыленный». Примерно каждые 23 минуты питомец с самым большим временем перезарядки обновляет свою способность! Способности мутаций питомца не обновляются.",
-    obtainMethod: "Пчелиное яйцо",
-    obtainChance: "1%"
+    rarity: "Prismatic",
+    description: "Легендарная девятихвостая лиса",
+    ability: "Миф о Девятихвостом: каждые 22 минуты подходит к фрукту другого игрока, мутирует его с помощью чакры, крадёт (дублирует) и отдаёт игроку! Очень редкий шанс мутировать с помощью чакры Лисьего Огня.",
+    obtainMethod: "Яйцо Дзен",
+    obtainChance: "0,08%"
   },
   {
     id: "pet-octopus",
