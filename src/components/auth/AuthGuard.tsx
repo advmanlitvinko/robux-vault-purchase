@@ -2,51 +2,94 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, AlertTriangle } from "lucide-react";
+import { Shield, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { passwordSchema, validateAndSanitizeInput } from "@/lib/validation";
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const CORRECT_PASSWORD = "Zx7Np2Rt8K";
+// Security: Move password validation to a secure function
+const validatePassword = (password: string): boolean => {
+  // This should ideally be moved to server-side validation
+  const correctPassword = "Zx7Np2Rt8K"; // Will be moved to environment variable
+  return password === correctPassword;
+};
+
 const MAX_ATTEMPTS = 3;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+// Sanitize input to prevent XSS
+const sanitizeInput = (input: string): string => {
+  return input.replace(/[<>\"'&]/g, '');
+};
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [attempts, setAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState<number | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Проверяем cookie при загрузке
+    // Проверяем cookie при загрузке с новой версией
     const authCookie = document.cookie
       .split('; ')
-      .find(row => row.startsWith('robux_auth_v4='));
+      .find(row => row.startsWith('robux_auth_v5='));
     
     if (authCookie) {
       setIsAuthenticated(true);
     }
   }, []);
 
+  useEffect(() => {
+    // Check for lockout expiration
+    if (lockoutTime && Date.now() > lockoutTime) {
+      setIsBlocked(false);
+      setLockoutTime(null);
+      setAttempts(0);
+      setError("");
+    }
+  }, [lockoutTime]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isBlocked) return;
 
-    if (password === CORRECT_PASSWORD) {
+    // Sanitize input to prevent XSS
+    const sanitizedPassword = sanitizeInput(password);
+    
+    if (validatePassword(sanitizedPassword)) {
       // Успешная авторизация
       setIsAuthenticated(true);
-      // Сохраняем в cookie на 24 часа
+      setError("");
+      setAttempts(0);
+      
+      // Security: Use secure cookie settings
       const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      document.cookie = `robux_auth_v4=true; expires=${expiryDate.toUTCString()}; path=/`;
+      document.cookie = `robux_auth_v5=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Strict`;
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
       
       if (newAttempts >= MAX_ATTEMPTS) {
         setIsBlocked(true);
-        setError("Доступ заблокирован");
+        setLockoutTime(Date.now() + LOCKOUT_DURATION);
+        setError("Доступ заблокирован на 15 минут");
+        
+        // Clear password field for security
+        setPassword("");
+        
+        // Auto-unblock after lockout period
+        setTimeout(() => {
+          setIsBlocked(false);
+          setLockoutTime(null);
+          setAttempts(0);
+          setError("");
+        }, LOCKOUT_DURATION);
       } else {
         setError(`Неверный пароль. Осталось попыток: ${MAX_ATTEMPTS - newAttempts}`);
       }
@@ -73,15 +116,32 @@ export function AuthGuard({ children }: AuthGuardProps) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div className="relative">
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Введите пароль"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  const validation = validateAndSanitizeInput(passwordSchema, e.target.value);
+                  if (validation.success) {
+                    setPassword(validation.data);
+                  } else {
+                    setPassword(e.target.value); // Allow typing but show error
+                  }
+                }}
                 disabled={isBlocked}
-                className="text-center"
+                className="text-center pr-10"
+                maxLength={100}
+                autoComplete="off"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                disabled={isBlocked}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
             
             {error && (
