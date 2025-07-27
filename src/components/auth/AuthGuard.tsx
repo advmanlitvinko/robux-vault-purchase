@@ -8,7 +8,7 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const CORRECT_PASSWORD = "Mx9Kp4Qw7L";
+const CORRECT_PASSWORD = "Zx7Np2Rt8K";
 const MAX_ATTEMPTS = 3;
 
 export function AuthGuard({ children }: AuthGuardProps) {
@@ -22,7 +22,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     // Проверяем cookie при загрузке
     const authCookie = document.cookie
       .split('; ')
-      .find(row => row.startsWith('robux_auth_v3='));
+      .find(row => row.startsWith('robux_auth_v4='));
     
     if (authCookie) {
       setIsAuthenticated(true);
@@ -39,7 +39,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       setIsAuthenticated(true);
       // Сохраняем в cookie на 24 часа
       const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      document.cookie = `robux_auth_v3=true; expires=${expiryDate.toUTCString()}; path=/`;
+      document.cookie = `robux_auth_v4=true; expires=${expiryDate.toUTCString()}; path=/`;
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
