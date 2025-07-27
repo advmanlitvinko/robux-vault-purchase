@@ -175,10 +175,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
               {isBlocked ? "Заблокировано" : "Войти"}
             </Button>
             
-            <div className="text-xs text-muted-foreground text-center space-y-1">
-              <p>Попытка {attempts}/{MAX_ATTEMPTS}</p>
-              <p className="text-yellow-600">Пароль: SecureP@ss2024!</p>
-            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Попытка {attempts}/{MAX_ATTEMPTS}
+            </p>
           </form>
         </CardContent>
       </Card>
