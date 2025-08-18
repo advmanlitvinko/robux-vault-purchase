@@ -4,6 +4,9 @@ import { PetCard } from '@/components/cart/PetCard';
 import { Zap, Star, Crown, Sparkles } from "lucide-react";
 
 // Прямые ссылки на изображения питомцев с Imgur
+const GoldenGooseImage = "https://i.imgur.com/26W3UXc.png";
+const LobsterThermidorImage = "https://i.imgur.com/jfxmXIm.png";
+const FrenchFryFerretImage = "https://i.imgur.com/d7Co4k2.png";
 const RaccoonImage = "https://i.imgur.com/JqSXdnW.png";
 const TRexImage = "https://i.imgur.com/62X40H6.png";
 const DiscoBeeImage = "https://i.imgur.com/izvUMJx.png";
@@ -16,6 +19,45 @@ interface PetsSectionProps {
 }
 
 const PETS_DATA = [
+  {
+    id: "pet-golden-goose",
+    name: "Golden Goose",
+    displayName: "Золотой Гусь",
+    price: 1299,
+    image: GoldenGooseImage,
+    icon: Crown,
+    rarity: "Divine",
+    description: "Легендарный гусь, несущий золотые яйца",
+    ability: "Каждые 13 минут откладывает Золотое Яйцо с мутацией Удачи. Его можно собрать, и при продаже может применить мутацию Удачи к фрукту в саду!",
+    obtainMethod: "Ростковое яйцо",
+    obtainChance: "Крайне редкий"
+  },
+  {
+    id: "pet-lobster-thermidor",
+    name: "Lobster Thermidor",
+    displayName: "Лобстер Термидор",
+    price: 999,
+    image: LobsterThermidorImage,
+    icon: Sparkles,
+    rarity: "Divine",
+    description: "Изысканный лобстер-гурман",
+    ability: "Кипящая точка: каждые 5-15 минут с шансом 20% делает ближайший фрукт Расплавленным, каждые 8-30 минут с шансом 10% делает фрукт Метеоритным!",
+    obtainMethod: "Кулинарный сундук, Экзотический кулинарный сундук",
+    obtainChance: "Редкий"
+  },
+  {
+    id: "pet-french-fry-ferret",
+    name: "French Fry Ferret",
+    displayName: "Хорёк с Картошкой Фри",
+    price: 799,
+    image: FrenchFryFerretImage,
+    icon: Star,
+    rarity: "Divine",
+    description: "Дружелюбный хорёк-повар",
+    ability: "Дружелюбный жарщик: каждые ~60 минут повышает уровень случайного питомца на 1! Способность нельзя копировать или обновлять другими питомцами.",
+    obtainMethod: "Яйцо Гурмана",
+    obtainChance: "Редкий"
+  },
   {
     id: "pet-raccoon",
     name: "Raccoon",
@@ -109,6 +151,7 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
 
   const firstRow = PETS_DATA.slice(0, 3);
   const secondRow = PETS_DATA.slice(3, 6);
+  const thirdRow = PETS_DATA.slice(6, 9);
 
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-background to-secondary/10">
@@ -137,6 +180,17 @@ export function PetsSection({ onBuyPet }: PetsSectionProps) {
           {/* Второй ряд */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {secondRow.map((pet) => (
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                onShowInfo={openPetInfo}
+              />
+            ))}
+          </div>
+
+          {/* Третий ряд */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {thirdRow.map((pet) => (
               <PetCard
                 key={pet.id}
                 pet={pet}
