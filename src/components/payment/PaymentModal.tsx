@@ -171,7 +171,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
           <DialogTitle>
             💳 Оплата {cartItems && cartItems.length > 0 ? (
               cartItems.length === 1 
-                ? cartItems[0].type === 'pet' 
+                ? (cartItems[0].type === 'pet' || cartItems[0].type === 'class')
                   ? cartItems[0].name 
                   : `${formatAmount(cartItems[0].amount || 0)} Robux`
                 : `${cartItems.length} товар${cartItems.length > 1 ? 'ов' : ''}`
@@ -182,7 +182,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
               <div className="space-y-1">
                  {cartItems.map((item) => (
                    <div key={item.id} className="text-sm">
-                     {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
+                     {(item.type === 'pet' || item.type === 'class') ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
                    </div>
                  ))}
                  <div className="font-medium mt-2">Итого: {formatPrice(price)}</div>
