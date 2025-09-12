@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { QuantityControl } from "@/components/ui/quantity-control";
 import { useCart } from "@/contexts/CartContext";
-import { Info } from "lucide-react";
+import { Info, Minus, Plus } from "lucide-react";
 
 interface ClassCardProps {
   classData: {
@@ -121,13 +120,36 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
 
           {/* Кнопка покупки или контрол количества */}
           <div className="space-y-2">
-            <QuantityControl
-              quantity={cartItem?.quantity || 0}
-              onDecrease={() => handleQuantityChange(-1)}
-              onIncrease={() => handleQuantityChange(1)}
-              onAdd={handleAddToCart}
-              isInCart={isInCart}
-            />
+            {!isInCart ? (
+              <Button 
+                onClick={handleAddToCart}
+                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                Купить
+              </Button>
+            ) : (
+              <div className="flex items-center justify-center gap-3 p-2 border rounded-lg bg-background/50">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
+                  onClick={() => handleQuantityChange(-1)}
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+                
+                <span className="w-8 text-center font-medium">{cartItem?.quantity}</span>
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
+                  onClick={() => handleQuantityChange(1)}
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
 
             {/* Сообщение о добавлении */}
             {showAdded && (
