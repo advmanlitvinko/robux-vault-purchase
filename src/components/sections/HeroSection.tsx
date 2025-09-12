@@ -17,7 +17,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
         <div className="text-center space-y-8">
           {/* Бейдж с акцией */}
           <Badge variant="secondary" className="text-sm px-4 py-2 animate-bounce-slow">
-            🔥 Только сегодня — скидка 15%
+            🔥 Лучшие цены на Robux
           </Badge>
           
           {/* Главный заголовок */}
