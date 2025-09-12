@@ -7,7 +7,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  type: 'pet' | 'robux';
+  type: 'pet' | 'robux' | 'class';
   amount?: number; // for robux items
 }
 

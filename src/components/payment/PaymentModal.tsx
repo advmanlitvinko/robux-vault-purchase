@@ -15,7 +15,7 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  type: 'robux' | 'pet';
+  type: 'robux' | 'pet' | 'class';
   amount?: number;
   image?: string;
 }

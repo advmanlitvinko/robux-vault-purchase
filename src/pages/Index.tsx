@@ -5,6 +5,7 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { RobuxCalculator } from '@/components/robux/RobuxCalculator';
 import { PaymentModal } from '@/components/payment/PaymentModal';
 import { PetsSection } from '@/components/pets/PetsSection';
+import { ClassesSection } from '@/components/classes/ClassesSection';
 import { InstructionsSection } from '@/components/sections/InstructionsSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
@@ -62,6 +63,16 @@ const Index = () => {
       price,
       isPet: true,
       petName
+    });
+  };
+
+  const handleBuyClass = (className: string, price: number) => {
+    setPaymentModal({
+      isOpen: true,
+      amount: 0,
+      price,
+      isPet: false,
+      petName: className
     });
   };
 
@@ -141,6 +152,9 @@ const Index = () => {
             <RobuxCalculator onBuy={handleBuy} />
           </div>
         </section>
+
+        {/* Классы из 99 Nights in the Forest */}
+        <ClassesSection onBuyClass={handleBuyClass} />
 
         {/* Питомцы */}
         <PetsSection onBuyPet={handleBuyPet} />
