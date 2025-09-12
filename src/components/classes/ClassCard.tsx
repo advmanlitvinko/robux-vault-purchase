@@ -75,7 +75,10 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
   const IconComponent = classData.icon;
 
   return (
-    <Card className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
+    <Card 
+      className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+      onClick={() => onShowInfo(classData)}
+    >
       <CardContent className="p-0">
         {/* Изображение класса */}
         <div className="relative aspect-square overflow-hidden">
@@ -96,7 +99,10 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
             variant="secondary"
             size="sm"
             className="absolute top-3 right-3 h-8 w-8 p-0 bg-background/80 hover:bg-background"
-            onClick={() => onShowInfo(classData)}
+            onClick={(e) => {
+              e.stopPropagation(); // Предотвращаем всплытие события
+              onShowInfo(classData);
+            }}
           >
             <Info className="h-4 w-4" />
           </Button>
@@ -122,7 +128,10 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
           <div className="space-y-2">
             {!isInCart ? (
               <Button 
-                onClick={handleAddToCart}
+                onClick={(e) => {
+                  e.stopPropagation(); // Предотвращаем всплытие события
+                  handleAddToCart();
+                }}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Купить
@@ -133,7 +142,10 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
                   variant="outline"
                   size="icon"
                   className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => handleQuantityChange(-1)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Предотвращаем всплытие события
+                    handleQuantityChange(-1);
+                  }}
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
@@ -144,7 +156,10 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
                   variant="outline"
                   size="icon"
                   className="h-8 w-8 border-primary/20 hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => handleQuantityChange(1)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Предотвращаем всплытие события
+                    handleQuantityChange(1);
+                  }}
                 >
                   <Plus className="h-3 w-3" />
                 </Button>
