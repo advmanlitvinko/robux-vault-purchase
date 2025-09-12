@@ -13,6 +13,7 @@ import { useCart } from '@/contexts/CartContext';
 interface CartItem {
   id: string;
   name: string;
+  displayName?: string;
   price: number;
   quantity: number;
   type: 'robux' | 'pet' | 'class';
@@ -27,6 +28,9 @@ interface PaymentModalProps {
   price: number;
   isPet?: boolean;
   petName?: string;
+  isClass?: boolean;
+  className?: string;
+  classDisplayName?: string;
   cartItems?: CartItem[];
 }
 
@@ -38,7 +42,7 @@ const PAYMENT_METHODS = [
   { id: 'paypal', name: 'PayPal', icon: DollarSign, popular: false, emoji: '🌍' },
 ];
 
-export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, cartItems }: PaymentModalProps) {
+export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, petName, isClass = false, className, classDisplayName, cartItems }: PaymentModalProps) {
   const { clearCart } = useCart();
   const [step, setStep] = useState<'nickname' | 'payment' | 'processing' | 'success' | 'qr'>('nickname');
   const [nickname, setNickname] = useState('');
@@ -172,18 +176,18 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
             💳 Оплата {cartItems && cartItems.length > 0 ? (
               cartItems.length === 1 
                 ? (cartItems[0].type === 'pet' || cartItems[0].type === 'class')
-                  ? cartItems[0].name 
+                  ? cartItems[0].displayName || cartItems[0].name 
                   : `${formatAmount(cartItems[0].amount || 0)} Robux`
                 : `${cartItems.length} товар${cartItems.length > 1 ? 'ов' : ''}`
-            ) : (isPet ? petName : `${formatAmount(amount)} Robux`)}
+            ) : (isPet ? petName : isClass ? classDisplayName : `${formatAmount(amount)} Robux`)}
           </DialogTitle>
           <DialogDescription>
             {cartItems && cartItems.length > 0 ? (
               <div className="space-y-1">
-                 {cartItems.map((item) => (
-                   <div key={item.id} className="text-sm">
-                     {(item.type === 'pet' || item.type === 'class') ? item.name : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
-                   </div>
+                     {cartItems.map((item) => (
+                       <div key={item.id} className="text-sm">
+                         {(item.type === 'pet' || item.type === 'class') ? (item.displayName || item.name) : `${formatAmount(item.amount || 0)} Robux`} {item.quantity > 1 && `(${item.quantity}x)`} - {formatPrice(item.price * item.quantity)}
+                       </div>
                  ))}
                  <div className="font-medium mt-2">Итого: {formatPrice(price)}</div>
               </div>
@@ -369,7 +373,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
                 cartItems.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span>
-                      {item.type === 'pet' ? item.name : `${formatAmount(item.amount || 0)} Robux`} x{item.quantity}
+                      {(item.type === 'pet' || item.type === 'class') ? (item.displayName || item.name) : `${formatAmount(item.amount || 0)} Robux`} x{item.quantity}
                     </span>
                     <span>{formatPrice(item.price * item.quantity)}</span>
                   </div>
@@ -377,7 +381,7 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
               ) : (
                 <div className="flex justify-between text-sm">
                   <span>
-                    {isPet ? petName : `${formatAmount(amount)} Robux`}
+                    {isPet ? petName : isClass ? classDisplayName : `${formatAmount(amount)} Robux`}
                   </span>
                   <span>{formatPrice(price)}</span>
                 </div>
@@ -414,12 +418,12 @@ export function PaymentModal({ isOpen, onClose, amount, price, isPet = false, pe
           email,
           items: cartItems || [{
             id: 'single-item',
-            name: isPet ? petName : 'Robux',
-            displayName: isPet ? petName : `${amount} Robux`,
+            name: isPet ? petName : isClass ? className : 'Robux',
+            displayName: isPet ? petName : isClass ? classDisplayName : `${amount} Robux`,
             price,
             quantity: 1,
-            type: isPet ? 'pet' : 'robux',
-            amount: isPet ? undefined : amount
+            type: isPet ? 'pet' : isClass ? 'class' : 'robux',
+            amount: isPet || isClass ? undefined : amount
           }],
           totalPrice: price,
           paymentMethod: selectedMethod || 'card'

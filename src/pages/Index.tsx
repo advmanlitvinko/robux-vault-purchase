@@ -22,12 +22,18 @@ const Index = () => {
     price: number;
     isPet?: boolean;
     petName?: string;
+    isClass?: boolean;
+    className?: string;
+    classDisplayName?: string;
   }>({
     isOpen: false,
     amount: 0,
     price: 0,
     isPet: false,
     petName: '',
+    isClass: false,
+    className: '',
+    classDisplayName: '',
   });
 
   const [checkoutModal, setCheckoutModal] = useState({
@@ -67,12 +73,27 @@ const Index = () => {
   };
 
   const handleBuyClass = (className: string, price: number) => {
+    // Найти данные класса по имени
+    const classesData = [
+      { name: "Cyborg", displayName: "🧬 Киборг" },
+      { name: "Pyromaniac", displayName: "🔥 Пироман" },
+      { name: "Big Game Hunter", displayName: "🐺 Грандиозный охотник" },
+      { name: "Assassin", displayName: "🗡️ Убийца" },
+      { name: "Poison Master", displayName: "☠️ Мастер яда" },
+      { name: "Alien", displayName: "👽 Инопланетянин" }
+    ];
+    
+    const classData = classesData.find(c => c.name === className);
+    
     setPaymentModal({
       isOpen: true,
       amount: 0,
       price,
       isPet: false,
-      petName: className
+      petName: '',
+      isClass: true,
+      className,
+      classDisplayName: classData?.displayName || className
     });
   };
 
@@ -125,7 +146,10 @@ const Index = () => {
       amount: 0,
       price: 0,
       isPet: false,
-      petName: ''
+      petName: '',
+      isClass: false,
+      className: '',
+      classDisplayName: ''
     });
   };
 
@@ -175,15 +199,18 @@ const Index = () => {
         </div>
 
         {/* Модальное окно оплаты */}
-      <PaymentModal
-        isOpen={paymentModal.isOpen}
-        onClose={handleClosePayment}
-        amount={paymentModal.amount}
-        price={paymentModal.price}
-        isPet={paymentModal.isPet}
-        petName={paymentModal.petName}
-        cartItems={items.length > 0 ? items : undefined}
-      />
+        <PaymentModal
+          isOpen={paymentModal.isOpen}
+          onClose={handleClosePayment}
+          amount={paymentModal.amount}
+          price={paymentModal.price}
+          isPet={paymentModal.isPet}
+          petName={paymentModal.petName}
+          isClass={paymentModal.isClass}
+          className={paymentModal.className}
+          classDisplayName={paymentModal.classDisplayName}
+          cartItems={items.length > 0 ? items : undefined}
+        />
       
       <QuickBuyToast onBuyNow={handleQuickBuyFromToast} />
 
