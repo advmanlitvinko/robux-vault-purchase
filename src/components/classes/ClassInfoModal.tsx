@@ -42,7 +42,12 @@ export const ClassInfoModal = ({ classData, isOpen, onClose, onBuy }: ClassInfoM
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU').format(price);
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
 
   const IconComponent = classData.icon;
@@ -84,7 +89,7 @@ export const ClassInfoModal = ({ classData, isOpen, onClose, onBuy }: ClassInfoM
 
               <div className="text-center md:text-left">
                 <div className="text-3xl font-bold text-primary">
-                  {formatPrice(classData.price)} {classData.currency}
+                  {formatPrice(classData.price)}
                 </div>
               </div>
             </div>
@@ -115,7 +120,7 @@ export const ClassInfoModal = ({ classData, isOpen, onClose, onBuy }: ClassInfoM
               onClick={handleBuy} 
               className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             >
-              Купить за {formatPrice(classData.price)} {classData.currency}
+              Купить за {formatPrice(classData.price)}
             </Button>
           </div>
         </div>

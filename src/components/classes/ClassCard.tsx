@@ -44,10 +44,15 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
   const isInCart = !!cartItem;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU').format(price);
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
 
-  const handleBuyClick = () => {
+  const handleAddToCart = () => {
     addItem({
       id: classData.id,
       name: classData.name,
@@ -110,29 +115,19 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
           {/* Цена */}
           <div className="text-center">
             <div className="text-2xl font-bold text-primary">
-              {formatPrice(classData.price)} {classData.currency}
+              {formatPrice(classData.price)}
             </div>
           </div>
 
           {/* Кнопка покупки или контрол количества */}
           <div className="space-y-2">
-            {!isInCart ? (
-              <Button 
-                onClick={handleBuyClick}
-                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                size="lg"
-              >
-                Купить класс
-              </Button>
-            ) : (
-              <QuantityControl
-                quantity={cartItem.quantity}
-                onDecrease={() => handleQuantityChange(-1)}
-                onIncrease={() => handleQuantityChange(1)}
-                onAdd={handleBuyClick}
-                isInCart={isInCart}
-              />
-            )}
+            <QuantityControl
+              quantity={cartItem?.quantity || 0}
+              onDecrease={() => handleQuantityChange(-1)}
+              onIncrease={() => handleQuantityChange(1)}
+              onAdd={handleAddToCart}
+              isInCart={isInCart}
+            />
 
             {/* Сообщение о добавлении */}
             {showAdded && (
