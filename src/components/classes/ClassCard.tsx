@@ -117,11 +117,15 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
             </p>
           </div>
 
-          {/* Цена */}
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {formatPrice(classData.price)}
+          {/* Информация о цене */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <IconComponent className="w-5 h-5 text-primary" />
+              <span className="text-sm text-muted-foreground">Цена:</span>
             </div>
+            <span className="text-xl font-bold text-primary">
+              {formatPrice(classData.price)}
+            </span>
           </div>
 
           {/* Кнопка покупки или контрол количества */}
