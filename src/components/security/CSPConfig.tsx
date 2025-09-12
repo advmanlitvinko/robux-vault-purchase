@@ -9,16 +9,12 @@ export function CSPConfig() {
       const meta = document.createElement('meta');
       meta.httpEquiv = 'Content-Security-Policy';
       meta.content = `
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https: blob:;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
+        style-src 'self' 'unsafe-inline' https:;
         img-src 'self' data: https: blob:;
-        font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' https:;
-        object-src 'none';
-        frame-ancestors 'none';
-        base-uri 'self';
-        form-action 'self';
+        font-src 'self' https:;
+        connect-src 'self' https: wss: ws:;
       `.replace(/\s+/g, ' ').trim();
       document.head.appendChild(meta);
     }
