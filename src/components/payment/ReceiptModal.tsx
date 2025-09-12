@@ -5,9 +5,10 @@ import { User, CheckCircle } from "lucide-react";
 interface CartItem {
   id: string;
   name: string;
+  displayName?: string;
   price: number;
   quantity: number;
-  type: 'robux' | 'pet';
+  type: 'robux' | 'pet' | 'class';
   amount?: number;
   image?: string;
 }
@@ -87,7 +88,9 @@ export function ReceiptModal({
                   <div className="flex justify-between">
                     <span>Товар:</span>
                     <span className="font-medium">
-                      {item.type === 'pet' ? item.displayName : `${formatAmount(item.amount || 0)} Robux`}
+                      {item.type === 'pet' ? item.displayName : 
+                       item.type === 'class' ? item.displayName : 
+                       `${formatAmount(item.amount || 0)} Robux`}
                     </span>
                   </div>
                   <div className="flex justify-between">
