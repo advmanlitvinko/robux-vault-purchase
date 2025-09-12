@@ -172,7 +172,7 @@ export const ClassCard = ({ classData, onShowInfo }: ClassCardProps) => {
 
             {/* Сообщение о добавлении */}
             {showAdded && (
-              <div className="text-center text-sm text-green-400 font-medium animate-in fade-in-0 duration-500">
+              <div className="text-center text-sm text-green-400 font-medium transition-all duration-500">
                 ✓ Добавлено в корзину
               </div>
             )}

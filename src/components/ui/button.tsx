@@ -9,17 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg transform hover:scale-105",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transform hover:scale-105",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-md hover:shadow-lg transform hover:scale-105",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg transform hover:scale-105",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         robux: "bg-gradient-to-r from-robux-green to-accent text-white hover:from-robux-green/90 hover:to-accent/90 shadow-lg hover:shadow-xl transform hover:scale-105",
-        premium: "bg-gradient-to-r from-accent to-secondary text-white hover:from-accent-hover hover:to-secondary-hover shadow-lg hover:shadow-xl transform hover:scale-105 animate-glow",
+        premium: "bg-gradient-to-r from-accent to-secondary text-white hover:from-accent/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transform hover:scale-105 animate-glow",
       },
       size: {
         default: "h-10 px-4 py-2",
