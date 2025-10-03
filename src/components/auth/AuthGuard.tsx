@@ -13,7 +13,7 @@ interface AuthGuardProps {
 // Security: Password validation with secure random password
 const validatePassword = (password: string): boolean => {
   // Generated secure password: combination of letters, numbers, symbols
-  const correctPassword = "qweasdzxc16";
+  const correctPassword = "SecurePass2025!";
   return password === correctPassword;
 };
 
@@ -38,7 +38,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     // Проверяем cookie при загрузке с новой версией
     const authCookie = document.cookie
       .split('; ')
-      .find(row => row.startsWith('robux_auth_v6='));
+      .find(row => row.startsWith('robux_auth_v7='));
     
     if (authCookie) {
       setIsAuthenticated(true);
@@ -86,7 +86,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       // Security: Enhanced secure cookie settings
       const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const secureFlag = location.protocol === 'https:' ? '; Secure' : '';
-      document.cookie = `robux_auth_v6=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Strict; HttpOnly=false${secureFlag}`;
+      document.cookie = `robux_auth_v7=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Strict; HttpOnly=false${secureFlag}`;
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
