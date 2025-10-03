@@ -13,7 +13,7 @@ interface AuthGuardProps {
 // Security: Password validation with secure random password
 const validatePassword = (password: string): boolean => {
   // Generated secure password: combination of letters, numbers, symbols
-  const correctPassword = "SecurePass2025!";
+  const correctPassword = "fOBHAsom1999";
   return password === correctPassword;
 };
 
